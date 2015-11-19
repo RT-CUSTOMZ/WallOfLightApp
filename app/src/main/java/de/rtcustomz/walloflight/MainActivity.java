@@ -74,11 +74,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CHOOSE_PICTURE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Uri imageUri = data.getData();
-                //imageView.setImageURI(imageUri);
+                imageView.setImageURI(imageUri);
 
                 try {
                     Bitmap image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    imageView.setImageBitmap(Bitmap.createScaledBitmap(image, 88, 88, false));
+                    Bitmap scaledImage = Bitmap.createScaledBitmap(image, 88, 88, false);
+                    //imageView.setImageBitmap(Bitmap.createScaledBitmap(image, 88, 88, false));
                 } catch (IOException ignore) {}  // someone was very stupid ...
 
             }
