@@ -49,7 +49,7 @@ public class Client implements Runnable {
                             if(channel>501)
                             {
                                 universe++;
-                                channel-=501;
+                                channel-=504;
                             }
                         }
                     }
