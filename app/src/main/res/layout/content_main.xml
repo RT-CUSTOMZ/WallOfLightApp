@@ -23,4 +23,14 @@
         android:layout_below="@+id/choosePictureButton"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UDP Pakete senden"
+        android:id="@+id/sendPacketsButton"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:onClick="sendUDPPacket"
+        android:visibility="invisible"/>
 </RelativeLayout>
