@@ -21,6 +21,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/choosePictureButton"
+        android:layout_above="@+id/sendPacketsButton"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true" />
 
@@ -29,8 +30,8 @@
         android:layout_height="wrap_content"
         android:text="UDP Pakete senden"
         android:id="@+id/sendPacketsButton"
-        android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
         android:onClick="sendUDPPacket"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>
