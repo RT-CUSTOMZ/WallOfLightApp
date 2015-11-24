@@ -3,7 +3,6 @@ package de.rtcustomz.walloflight;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,7 +21,7 @@ public class Client implements Runnable {
     @Override
     public void run() {
         try {
-            InetAddress serverAddr = InetAddress.getByName("192.168.178.20");//("192.168.137.1");
+            InetAddress serverAddr = InetAddress.getByName("192.168.120.73");
             DatagramSocket clientSocket = new DatagramSocket();
             DatagramPacket sendPacket;
             byte[] sendData;
@@ -68,7 +67,7 @@ public class Client implements Runnable {
                     }
                     if((offset_x+pos_x)>=image.getWidth())
                     {
-                        Log.w("WallOfLightApp", "x is out of image 2! value is: "+(offset_x+pos_x));
+                        Log.i("WallOfLightApp", "x is out of image 2! value is: "+(offset_x+pos_x));
                         break;
                     }
                 }
