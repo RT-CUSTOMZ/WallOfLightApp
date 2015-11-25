@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void selectPicture(View view) {
-        Intent imageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent imageIntent = new Intent(Intent.ACTION_PICK/*Intent.ACTION_GET_CONTENT*/);
         imageIntent.setType("image/*");
 
         PackageManager packageManager = getPackageManager();

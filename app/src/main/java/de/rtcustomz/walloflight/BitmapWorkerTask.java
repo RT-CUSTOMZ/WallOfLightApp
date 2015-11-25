@@ -120,7 +120,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
 
         is.close();
 
-        int orientation = 0;//getOrientation(contentResolver, imageUri);
+        int orientation = getOrientation(contentResolver, imageUri);
 
         if (orientation > 0) {
             Matrix matrix = new Matrix();
@@ -132,15 +132,15 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
     }
 
     private int getOrientation(ContentResolver contentResolver, Uri photoUri) {
-        // TODO: doesn't work...
         Cursor cursor = contentResolver.query(photoUri,
-                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+               new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
 
         if (cursor == null || cursor.getCount() != 1) {
             return -1;
         }
 
         cursor.moveToFirst();
+
         int orientation = cursor.getInt(0);
         cursor.close();
 

@@ -32,7 +32,7 @@ public class Client implements Runnable {
     @Override
     public void run() {
         try {
-            InetAddress serverAddr = InetAddress.getByName("192.168.178.20");
+            InetAddress serverAddr = InetAddress.getByName("192.168.120.73");
             DatagramSocket clientSocket = new DatagramSocket();
             DatagramPacket sendPacket;
             byte[] sendData;
