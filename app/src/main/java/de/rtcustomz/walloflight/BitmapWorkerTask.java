@@ -132,6 +132,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
     }
 
     private int getOrientation(ContentResolver contentResolver, Uri photoUri) {
+        // TODO: doesn't work with pictures from camera?
         Cursor cursor = contentResolver.query(photoUri,
                 new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
 
