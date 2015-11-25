@@ -8,23 +8,39 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 public class Client implements Runnable {
 
     private final static int PACKETSIZE_MAX = 572 ;
+    private static byte[] gamma_correction_table;
     private Bitmap image;
+    private double gamma;
 
-    public Client(Bitmap scaledImage) {
+    public Client(Bitmap scaledImage, double gamma) {
         this.image=scaledImage;
+        this.gamma=gamma;
+    }
+
+    private void initialize_gamma_table(double gamma) {
+        gamma_correction_table=new byte[256];
+        for(double i=0; i<=255; i++) {
+            gamma_correction_table[(int)i]=(byte)(Math.pow(i/255, gamma)*255+0.5);
+        }
     }
 
     @Override
     public void run() {
         try {
-            InetAddress serverAddr = InetAddress.getByName("192.168.120.73");
+            InetAddress serverAddr = InetAddress.getByName("192.168.178.20");
             DatagramSocket clientSocket = new DatagramSocket();
             DatagramPacket sendPacket;
             byte[] sendData;
+            initialize_gamma_table(gamma);
+
+            Date start = new Date(System.currentTimeMillis());
+            int loop;
+            for(loop=0;loop<1;loop++){
 
             int bytes = image.getByteCount();
             ByteBuffer buffer = ByteBuffer.allocate(bytes);
@@ -52,10 +68,16 @@ public class Client implements Runnable {
                             }
                         }
                     }
-                    pixelcolor = image.getPixel((offset_x+pos_x), pos_y);//x=width=spalte,y=height=reihe
-                    sorted_rgb_byte_array[universe][channel] = (byte) Color.red(pixelcolor);
-                    sorted_rgb_byte_array[universe][channel+1] = (byte) Color.green(pixelcolor);
-                    sorted_rgb_byte_array[universe][channel+2] = (byte) Color.blue(pixelcolor);
+                    pixelcolor = image.getPixel((offset_x + pos_x), pos_y);//x=width=spalte,y=height=reihe
+                    if(gamma!=0) {
+                        sorted_rgb_byte_array[universe][channel] = gamma_correction_table[Color.red(pixelcolor)];
+                        sorted_rgb_byte_array[universe][channel + 1] = gamma_correction_table[Color.green(pixelcolor)];
+                        sorted_rgb_byte_array[universe][channel + 2] = gamma_correction_table[Color.blue(pixelcolor)];
+                    } else {
+                        sorted_rgb_byte_array[universe][channel] = (byte) Color.red(pixelcolor);
+                        sorted_rgb_byte_array[universe][channel + 1] = (byte) Color.green(pixelcolor);
+                        sorted_rgb_byte_array[universe][channel + 2] = (byte) Color.blue(pixelcolor);
+                    }
                     pos_x++;
                     if(pos_x>7) {
                         pos_x=0;
@@ -77,7 +99,9 @@ public class Client implements Runnable {
                 sendData = ArtDmxPacket.getPacket(sorted_rgb_byte_array[uni], uni);
                 sendPacket = new DatagramPacket(sendData, sendData.length, serverAddr, 6454);
                 clientSocket.send(sendPacket);
-            }
+            }}
+            Date end = new Date(System.currentTimeMillis());
+            Log.i("WallOfLightApp", "send "+loop+"pictures in "+(end.getTime()-start.getTime())+" ms");
 
             clientSocket.close();
         }

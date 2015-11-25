@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         //
         if(wifiConnected) {
             if(scaledImage!=null) {
-                Thread t = new Thread(new Client(scaledImage));
+                Thread t = new Thread(new Client(scaledImage,2.8));
                 t.start();
             }
             else {
