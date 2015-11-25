@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wall of Light</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="choosePictureButton">Ein Bild auswählen</string>
+    <string name="imageErrorToast">Fehler beim laden des skalierten Bildes</string>
+    <string name="imageViewDescription">Das Bild wird an die Wall of Light gesendet</string>
+    <string name="selectPictureErrorToast">Keine Anwendung zum öffnen von Bildern gefunden</string>
+    <string name="sendPacketsButton">UDP Pakete senden</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="wifiErrorToast">Netzwerkfehler. Stelle sicher dass WLAN verbunden ist!</string>
+    <string name="choosePictureRequest">Bild auswählen</string>
+    <string name="pref_header_data_sync">Daten &amp; Sync</string>
+    <string name="pref_header_general">Allgemein</string>
+    <string name="pref_header_notifications">Benachrichtigungen</string>
+    <string name="pref_ringtone_silent">Still</string>
+    <string name="pref_title_add_friends_to_messages">Freunde zu Nachrichten hinzufügen</string>
+    <string name="pref_title_display_name">Anzeigename</string>
+    <string name="pref_title_new_message_notifications">Benachritigung über neue Nachrichten</string>
+    <string name="pref_title_ringtone">Klingelton</string>
+    <string name="pref_title_social_recommendations">Soziale Empfehlungen aktivieren</string>
+    <string name="pref_title_sync_frequency">Synchronisierungsfrequenz</string>
+    <string name="pref_title_system_sync_settings">Synchroniesierungseinstellungen des Systems</string>
+    <string name="pref_title_vibrate">Vibrieren</string>
+    <string name="pref_description_social_recommendations">Vorschläge für neue Kontakte anhand deines Nachrichtensverlaufs machen</string>
+    <string name="pref_default_display_name">Max Mustermann</string>
+</resources>
