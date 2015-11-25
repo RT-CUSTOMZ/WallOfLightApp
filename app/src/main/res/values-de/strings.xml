@@ -4,7 +4,7 @@
     <string name="action_settings">Einstellungen</string>
     <string name="choosePictureButton">Ein Bild auswählen</string>
     <string name="imageErrorToast">Fehler beim laden des skalierten Bildes</string>
-    <string name="imageViewDescription">Das Bild wird an die Wall of Light gesendet</string>
+    <string name="imageViewDescription">Das Bild das an die Wall of Light gesendet wird</string>
     <string name="selectPictureErrorToast">Keine Anwendung zum öffnen von Bildern gefunden</string>
     <string name="sendPacketsButton">UDP Pakete senden</string>
     <string name="title_activity_settings">Einstellungen</string>
