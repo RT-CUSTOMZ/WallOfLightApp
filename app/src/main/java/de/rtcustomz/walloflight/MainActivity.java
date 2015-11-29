@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.soundcloud.android.crop.Crop;
+
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -84,12 +88,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CHOOSE_PICTURE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Uri imageUri = data.getData();
+                beginCrop(data.getData());
+            }
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            if (resultCode == RESULT_OK) {
+                Uri croppedImageUri = Crop.getOutput(data);
 
                 BitmapWorkerTask task = new BitmapWorkerTask(scaledImage, imageView, getContentResolver());
-                task.execute(imageUri);
+                task.execute(croppedImageUri);
 
                 sendbutton.setVisibility(Button.VISIBLE);
+            } else if (resultCode == Crop.RESULT_ERROR) {
+                Toast.makeText(this, Crop.getError(data).getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -114,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(getApplicationContext(), getString(R.string.selectPictureErrorToast), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void beginCrop(Uri source) {
+        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+        Crop.of(source, destination).asSquare().start(this);
     }
 
     public void sendUDPPacket(View view) {

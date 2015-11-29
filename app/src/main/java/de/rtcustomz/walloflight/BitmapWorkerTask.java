@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -44,6 +45,11 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
         try {
             //image = MediaStore.Images.Media.getBitmap(contentResolverReference.get(), imageUri);
             image = decodeBitmapFromUri(imageUri, 200, 200);
+
+            File croppedImage = new File(imageUri.getPath());
+            if(croppedImage.exists()) {
+                croppedImage.delete();
+            }
 
             // we can show image, because we have decoded it
             publishProgress();
