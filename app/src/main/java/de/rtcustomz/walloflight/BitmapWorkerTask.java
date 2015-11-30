@@ -5,9 +5,11 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -43,7 +45,6 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
         Bitmap scaledImage = null;
 
         try {
-            //image = MediaStore.Images.Media.getBitmap(contentResolverReference.get(), imageUri);
             image = decodeBitmapFromUri(imageUri, 200, 200);
 
             File croppedImage = new File(imageUri.getPath());
@@ -138,18 +139,24 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
     }
 
     private int getOrientation(ContentResolver contentResolver, Uri photoUri) {
-        Cursor cursor = contentResolver.query(photoUri,
-               new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+        File imageFile = new File(photoUri.getPath());
 
-        if (cursor == null || cursor.getCount() != 1) {
-            return -1;
+        try {
+            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
+            // We only recognize a subset of orientation tag values
+            switch (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    return 90;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    return 180;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    return 270;
+                default:
+                    return ExifInterface.ORIENTATION_UNDEFINED;
+            }
+        } catch (IOException e) {
+            Log.e("WallOfLightApp", e.getMessage());
+            return 0;
         }
-
-        cursor.moveToFirst();
-
-        int orientation = cursor.getInt(0);
-        cursor.close();
-
-        return orientation;
     }
 }

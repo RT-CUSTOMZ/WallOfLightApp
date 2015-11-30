@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CHOOSE_PICTURE_REQUEST) {
+        if (requestCode == Crop.REQUEST_PICK) {
             if (resultCode == RESULT_OK) {
                 beginCrop(data.getData());
             }
@@ -105,24 +105,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void selectPicture(View view) {
-        Intent imageIntent = new Intent(Intent.ACTION_PICK/*Intent.ACTION_GET_CONTENT*/);
-        imageIntent.setType("image/*");
-
-        PackageManager packageManager = getPackageManager();
-        List activities = packageManager.queryIntentActivities(imageIntent, PackageManager.MATCH_DEFAULT_ONLY);
-        boolean isIntentSafe = activities.size() > 0;
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        if(isIntentSafe) {
-            if(permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                // let the user choose a picture to sent
-                startActivityForResult(Intent.createChooser(imageIntent, getString(R.string.choosePictureRequest)), CHOOSE_PICTURE_REQUEST);
-            } else {
-                // ask user for READ_EXTERNAL_STORAGE permission
-                ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, READ_EXTERNAL_STORAGE_REQUEST);
-            }
+        if(permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            // let the user choose a picture to sent
+            Crop.pickImage(this);
         } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.selectPictureErrorToast), Toast.LENGTH_LONG).show();
+            // ask user for READ_EXTERNAL_STORAGE permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST);
         }
     }
 
