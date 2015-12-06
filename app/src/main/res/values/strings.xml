@@ -9,27 +9,21 @@
     <string name="wifiErrorToast">Network Error. Make sure to activate WiFi!</string>
     <string name="selectPictureErrorToast">Couldn\'t find any app to open a picture.</string>
 
-
-<!-- START Strings related to Settings -->
+    <!-- START Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-
     <string name="pref_title_resolutionX">Resolution X</string>
-    <string name="pref_default_resolutionX">88</string>
-    <string name="pref_default_resolutionY">88</string>
+    <string name="pref_default_resolutionX" translatable="false">88</string>
+    <string name="pref_default_resolutionY" translatable="false">88</string>
     <string name="pref_title_resolutionY">Resolution Y</string>
-    <string name="pref_default_gamma">2.8</string>
+    <string name="pref_default_gamma" translatable="false">2.8</string>
     <string name="pref_title_gamma">Gamma</string>
-    <string name="sync_default_ip">192.168.1.42</string>
+    <string name="sync_default_ip" translatable="false">192.168.120.73</string>
     <string name="sync_title_ip">IP-Address</string>
 
     <!-- END Strings related to Settings -->
