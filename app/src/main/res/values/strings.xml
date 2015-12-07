@@ -8,6 +8,7 @@
     <string name="imageErrorToast">Failed to load scaled image!</string>
     <string name="wifiErrorToast">Network Error. Make sure to activate WiFi!</string>
     <string name="selectPictureErrorToast">Couldn\'t find any app to open a picture.</string>
+    <string name="setIpAddressError">Couldn\'t set IP-Address from Settings.</string>
 
     <!-- START Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
@@ -18,13 +19,17 @@
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
     <string name="pref_title_resolutionX">Resolution X</string>
+    <string name="pref_key_resolutionX" translatable="false">general_resolutionX</string>
     <string name="pref_default_resolutionX" translatable="false">88</string>
-    <string name="pref_default_resolutionY" translatable="false">88</string>
     <string name="pref_title_resolutionY">Resolution Y</string>
-    <string name="pref_default_gamma" translatable="false">2.8</string>
+    <string name="pref_key_resolutionY" translatable="false">general_resolutionY</string>
+    <string name="pref_default_resolutionY" translatable="false">88</string>
     <string name="pref_title_gamma">Gamma</string>
-    <string name="sync_default_ip" translatable="false">192.168.120.73</string>
-    <string name="sync_title_ip">IP-Address</string>
+    <string name="pref_key_gamma" translatable="false">general_gamma</string>
+    <string name="pref_default_gamma" translatable="false">2.8</string>
+    <string name="pref_title_ip">IP-Address</string>
+    <string name="pref_key_ip" translatable="false">sync_ip</string>
+    <string name="pref_default_ip" translatable="false">192.168.120.73</string>
 
     <!-- END Strings related to Settings -->
 

@@ -1,14 +1,12 @@
 package de.rtcustomz.walloflight;
 
 import android.content.ContentResolver;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -16,18 +14,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.nio.ByteBuffer;
 
-public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
-    private final WeakReference<Bitmap> scaledImageReference;
+public class BitmapWorkerTask extends AsyncTask<Uri, Void, Void> {
     private final WeakReference<ContentResolver> contentResolverReference;
     private final WeakReference<ImageView> imageViewReference;
+    private final WeakReference<Client> clientReference;
     private Bitmap image;
 
-    public BitmapWorkerTask(Bitmap scaledImage, ImageView imageView, ContentResolver contentResolver) {
-        scaledImageReference = new WeakReference<>(scaledImage);
+    public BitmapWorkerTask(ImageView imageView, ContentResolver contentResolver, Client client) {
         contentResolverReference = new WeakReference<>(contentResolver);
         imageViewReference = new WeakReference<>(imageView);
+        clientReference = new WeakReference<>(client);
     }
 
     @Override
@@ -39,16 +36,17 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
     }
 
     @Override
-    protected Bitmap doInBackground(Uri... params) {
+    protected Void doInBackground(Uri... params) {
         Uri imageUri = params[0];
 
         Bitmap scaledImage = null;
+        final Client client = clientReference.get();
 
         try {
             image = decodeBitmapFromUri(imageUri, 200, 200);
 
             File croppedImage = new File(imageUri.getPath());
-            if(croppedImage.exists()) {
+            if (croppedImage.exists()) {
                 croppedImage.delete();
             }
 
@@ -57,26 +55,28 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
 
             scaledImage = Bitmap.createScaledBitmap(image, 88, 88, false);
 
-        }  catch (IOException ignore) {} // someone was very stupid ...
+            client.sendImage(scaledImage);
 
-        return scaledImage;
+        } catch (IOException ignore) {
+        } // someone was very stupid ..
+        return null;
     }
 
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-        if (bitmap != null) {
-            //TODO: that's not very efficient...
-            final Bitmap scaledBitmap = scaledImageReference.get();
-
-            int bytes = bitmap.getByteCount();
-            ByteBuffer buffer = ByteBuffer.allocate(bytes);
-
-            bitmap.copyPixelsToBuffer(buffer);
-            buffer.rewind();
-
-            scaledBitmap.copyPixelsFromBuffer(buffer);
-        }
-    }
+//    @Override
+//    protected void onPostExecute(Bitmap bitmap) {
+//        if (bitmap != null) {
+//            //TODO: that's not very efficient...
+//            final Bitmap scaledBitmap = scaledImageReference.get();
+//
+//            int bytes = bitmap.getByteCount();
+//            ByteBuffer buffer = ByteBuffer.allocate(bytes);
+//
+//            bitmap.copyPixelsToBuffer(buffer);
+//            buffer.rewind();
+//
+//            scaledBitmap.copyPixelsFromBuffer(buffer);
+//        }
+//    }
 
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
@@ -102,7 +102,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Bitmap> {
     private Bitmap decodeBitmapFromUri(Uri imageUri, int reqWidth, int reqHeight) throws IOException {
         ContentResolver contentResolver = contentResolverReference.get();
 
-        if(contentResolver == null) {
+        if (contentResolver == null) {
             throw new IOException("There was an error opening the image, please try again later!");
         }
 

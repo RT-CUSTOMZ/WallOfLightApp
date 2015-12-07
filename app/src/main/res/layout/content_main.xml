@@ -21,18 +21,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/choosePictureButton"
-        android:layout_above="@+id/sendPacketsButton"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:contentDescription="@string/imageViewDescription" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sendPacketsButton"
-        android:id="@+id/sendPacketsButton"
-        android:layout_centerHorizontal="true"
-        android:onClick="sendUDPPacket"
-        android:visibility="invisible"
-        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

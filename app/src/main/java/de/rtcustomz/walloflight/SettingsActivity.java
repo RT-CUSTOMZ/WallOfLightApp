@@ -171,12 +171,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("general_resolutionX"));
-            bindPreferenceSummaryToValue(findPreference("general_resolutionY"));
-            bindPreferenceSummaryToValue(findPreference("general_gamma"));
-            EditText editText1 = ((EditTextPreference) findPreference("general_gamma"))
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_resolutionX)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_resolutionY)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_gamma)));
+            EditText editText1 = ((EditTextPreference) findPreference(getString(R.string.pref_key_gamma)))
                     .getEditText();
-            editText1.setFilters(new InputFilter[]{ new InputFilterMinMax(2, 3) });
+            editText1.setFilters(new InputFilter[]{new InputFilterMinMax(1, 3)});
         }
 
         @Override
@@ -208,7 +208,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_ip"));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_ip)));
             EditText editText1 = ((EditTextPreference) findPreference("sync_ip"))
                     .getEditText();
             InputFilter[] filters = new InputFilter[1];
