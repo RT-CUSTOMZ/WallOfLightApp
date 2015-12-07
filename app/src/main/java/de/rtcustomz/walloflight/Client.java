@@ -10,43 +10,43 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
-public class Client implements Runnable {
+public class Client {
 
-    private final static int PACKETSIZE_MAX = 572 ;
-    private static byte[] gamma_correction_table;
-    private Bitmap image;
-    private double gamma;
+    //private final static int PACKETSIZE_MAX = 572;
+    private static byte[] gamma_correction_table = new byte[256];
+    private static String wol_ip;
+    byte[][] sorted_rgb_byte_array = new byte[51][504];
+    DatagramSocket clientSocket;
 
-    public Client(Bitmap scaledImage, double gamma) {
-        this.image=scaledImage;
-        this.gamma=gamma;
+    public void setGamma(double gamma) {
+        initialize_gamma_table(gamma);
+    }
+
+    public void setIP(String ip_address) {
+        wol_ip = ip_address;
     }
 
     private void initialize_gamma_table(double gamma) {
-        gamma_correction_table=new byte[256];
-        for(double i=0; i<=255; i++) {
-            gamma_correction_table[(int)i]=(byte)(Math.pow(i/255, gamma)*255+0.5);
+        for (double i = 0; i <= 255; i++) {
+            gamma_correction_table[(int) i] = (byte) (Math.pow(i / 255, gamma) * 255 + 0.5);
         }
     }
 
-    @Override
-    public void run() {
+    public void sendImage(Bitmap image) {
         try {
-            InetAddress serverAddr = InetAddress.getByName("192.168.120.73");
-            DatagramSocket clientSocket = new DatagramSocket();
+            InetAddress wol_address = InetAddress.getByName(wol_ip);
+            clientSocket = new DatagramSocket();
             DatagramPacket sendPacket;
             byte[] sendData;
-            initialize_gamma_table(gamma);
 
             Date start = new Date(System.currentTimeMillis());
             int loop;
-            for(loop=0;loop<1;loop++) {
+            for (loop = 0; loop < 1; loop++) {
 
                 int bytes = image.getByteCount();
                 ByteBuffer buffer = ByteBuffer.allocate(bytes);
                 image.copyPixelsToBuffer(buffer);
-                byte[] temp;
-                byte[][] sorted_rgb_byte_array = new byte[51][504];
+                //byte[][] sorted_rgb_byte_array = new byte[51][504];
                 int pixelcolor;
                 int pos_x = 0;
                 int pos_y = 0;
@@ -67,15 +67,9 @@ public class Client implements Runnable {
                             }
                         }
                         pixelcolor = image.getPixel((offset_x + pos_x), pos_y);//x=width=spalte,y=height=reihe
-                        if (gamma != 0) {
-                            sorted_rgb_byte_array[universe][channel] = gamma_correction_table[Color.red(pixelcolor)];
-                            sorted_rgb_byte_array[universe][channel + 1] = gamma_correction_table[Color.green(pixelcolor)];
-                            sorted_rgb_byte_array[universe][channel + 2] = gamma_correction_table[Color.blue(pixelcolor)];
-                        } else {
-                            sorted_rgb_byte_array[universe][channel] = (byte) Color.red(pixelcolor);
-                            sorted_rgb_byte_array[universe][channel + 1] = (byte) Color.green(pixelcolor);
-                            sorted_rgb_byte_array[universe][channel + 2] = (byte) Color.blue(pixelcolor);
-                        }
+                        sorted_rgb_byte_array[universe][channel] = gamma_correction_table[Color.red(pixelcolor)];
+                        sorted_rgb_byte_array[universe][channel + 1] = gamma_correction_table[Color.green(pixelcolor)];
+                        sorted_rgb_byte_array[universe][channel + 2] = gamma_correction_table[Color.blue(pixelcolor)];
                         pos_x++;
                         if (pos_x > 7) {
                             pos_x = 0;
@@ -86,7 +80,7 @@ public class Client implements Runnable {
                             }
                         }
                         if ((offset_x + pos_x) >= image.getWidth()) {
-                            Log.i("WallOfLightApp", "x is out of image 2! value is: " + (offset_x + pos_x));
+                            //Log.d("WallOfLightApp", "x is out of image! value is: " + (offset_x + pos_x));
                             break;
                         }
                     }
@@ -94,19 +88,18 @@ public class Client implements Runnable {
 
                 for (byte uni = 0; uni < 51; uni++) {
                     sendData = ArtNetPacket.getArtDMXPacket(sorted_rgb_byte_array[uni], uni);
-                    sendPacket = new DatagramPacket(sendData, sendData.length, serverAddr, 6454);
+                    sendPacket = new DatagramPacket(sendData, sendData.length, wol_address, 6454);
                     clientSocket.send(sendPacket);
                 }
 
-                sendPacket = new DatagramPacket(ArtNetPacket.ArtSyncPacket, ArtNetPacket.ArtSyncPacket.length, serverAddr, 6454);
+                sendPacket = new DatagramPacket(ArtNetPacket.ArtSyncPacket, ArtNetPacket.ArtSyncPacket.length, wol_address, 6454);
                 clientSocket.send(sendPacket);
             }
             Date end = new Date(System.currentTimeMillis());
-            Log.i("WallOfLightApp", "send "+loop+" pictures in "+(end.getTime()-start.getTime())+" ms");
+            Log.i("WallOfLightApp", "send " + loop + " pictures in " + (end.getTime() - start.getTime()) + " ms to: " + wol_address.getHostAddress());
 
             clientSocket.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
