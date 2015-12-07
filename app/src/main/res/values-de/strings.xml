@@ -12,8 +12,9 @@
     <string name="choosePictureRequest">Bild auswählen</string>
     <string name="pref_header_data_sync">Daten &amp; Sync</string>
     <string name="pref_header_general">Allgemein</string>
-    <string name="sync_title_ip">IP-Adresse</string>
     <string name="pref_title_resolutionX">Auflösung X</string>
     <string name="pref_title_resolutionY">Auflösung Y</string>
     <string name="pref_title_gamma">Gamma</string>
+    <string name="pref_title_ip">IP-Adresse</string>
+    <string name="setIpAddressError">Kann IP-Adresse aus Einstellungen nicht setzen.</string>
 </resources>
