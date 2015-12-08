@@ -8,86 +8,92 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
+import android.webkit.MimeTypeMap;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 
-public class BitmapWorkerTask extends AsyncTask<Uri, Void, Void> {
+public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type> {
+    private static final String TAG = "BitmapWorkerTask";
+
     private final WeakReference<ContentResolver> contentResolverReference;
-    private final WeakReference<ImageView> imageViewReference;
-    private final WeakReference<Client> clientReference;
-    private Bitmap image;
+    public Bitmap image;
+    public byte[] imageData;
 
-    public BitmapWorkerTask(ImageView imageView, ContentResolver contentResolver, Client client) {
+    public static final String GIF_MIMETYPE = "image/gif";
+
+    public static enum Type {
+        GIF, OTHER
+    }
+
+    public BitmapWorkerTask(ContentResolver contentResolver) {
         contentResolverReference = new WeakReference<>(contentResolver);
-        imageViewReference = new WeakReference<>(imageView);
-        clientReference = new WeakReference<>(client);
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        // show image if ready to show
-        final ImageView imageView = imageViewReference.get();
+    protected Type doInBackground(Uri... params) {
+        final Uri imageUri = params[0];
 
-        imageView.setImageBitmap(image);
-    }
+        ContentResolver contentResolver = contentResolverReference.get();
 
-    @Override
-    protected Void doInBackground(Uri... params) {
-        Uri imageUri = params[0];
+        String mimeType = getMimeType(imageUri, contentResolver);
+        Log.e(TAG, "MIMEType: " + mimeType);
 
-        Bitmap scaledImage = null;
-        final Client client = clientReference.get();
+        if(mimeType == null)
+            return null;
 
-        try {
-            image = decodeBitmapFromUri(imageUri, 200, 200);
+        if(mimeType.equals(GIF_MIMETYPE)) {
+            InputStream is = null;
 
-            File croppedImage = new File(imageUri.getPath());
-            if (croppedImage.exists()) {
-                croppedImage.delete();
+            try {
+                is = contentResolver.openInputStream(imageUri);
+
+                imageData = IOUtils.toByteArray(is);
+
+                return Type.GIF;
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "Couldn't find file", e);
+            } catch (IOException e) {
+                Log.e(TAG, "IO exception", e);
+            } catch (OutOfMemoryError e) {
+                Log.e(TAG, "Out of memory during decoding image " + imageUri.getPath(), e);
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException ignored) { }
             }
+        } else {
+            try {
+                image = decodeBitmapFromUri(imageUri, 200, 200);
 
-            // we can show image, because we have decoded it
-            publishProgress();
+                /*File croppedImage = new File(imageUri.getPath());
+                if (croppedImage.exists()) {
+                    croppedImage.delete();
+                }*/
 
-            scaledImage = Bitmap.createScaledBitmap(image, 88, 88, false);
+                return Type.OTHER;
+            } catch (IOException e) {
+                Log.e(TAG, "IO exception", e);
+            }
+        }
 
-            client.sendImage(scaledImage);
-
-        } catch (IOException ignore) {
-        } // someone was very stupid ..
         return null;
     }
 
-//    @Override
-//    protected void onPostExecute(Bitmap bitmap) {
-//        if (bitmap != null) {
-//            //TODO: that's not very efficient...
-//            final Bitmap scaledBitmap = scaledImageReference.get();
-//
-//            int bytes = bitmap.getByteCount();
-//            ByteBuffer buffer = ByteBuffer.allocate(bytes);
-//
-//            bitmap.copyPixelsToBuffer(buffer);
-//            buffer.rewind();
-//
-//            scaledBitmap.copyPixelsFromBuffer(buffer);
-//        }
-//    }
-
-    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
+    public static int calculateInSampleSize(int origWidth, int origHeight, int reqWidth, int reqHeight) {
         int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
+        if (origHeight > reqHeight || origWidth > reqWidth) {
 
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
+            final int halfHeight = origHeight / 2;
+            final int halfWidth = origWidth / 2;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
@@ -97,6 +103,17 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Void> {
         }
 
         return inSampleSize;
+    }
+
+    public static String getMimeType(Uri uri, ContentResolver contentResolver) {
+        String mimeType = null;
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            mimeType = contentResolver.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase());
+        }
+        return mimeType;
     }
 
     private Bitmap decodeBitmapFromUri(Uri imageUri, int reqWidth, int reqHeight) throws IOException {
@@ -115,7 +132,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, Void> {
         is.close();
 
         // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options.outWidth, options.outHeight, reqWidth, reqHeight);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;

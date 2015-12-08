@@ -16,7 +16,7 @@
         android:text="@string/choosePictureButton"
         android:onClick="selectPicture" />
 
-    <ImageView
+    <com.felipecsl.gifimageview.library.GifImageView
         android:id="@+id/imageView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

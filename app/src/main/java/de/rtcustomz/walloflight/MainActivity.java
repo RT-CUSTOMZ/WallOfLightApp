@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,10 +21,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.felipecsl.gifimageview.library.GifImageView;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
@@ -33,7 +36,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public static final int CHOOSE_PICTURE_REQUEST = 1;
     public static final int READ_EXTERNAL_STORAGE_REQUEST = 1;
-    private ImageView imageView;
+    private GifImageView imageView;
     //private Bitmap scaledImage = Bitmap.createBitmap(88,88, Bitmap.Config.ARGB_8888);
     private Client client = new Client();
     SharedPreferences sharedPref;
@@ -54,7 +57,24 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
+        imageView = (GifImageView) findViewById(R.id.imageView);
+
+        imageView.setOnFrameAvailable(new GifImageView.OnFrameAvailable() {
+            @Override
+            public Bitmap onFrameAvailable(Bitmap bitmap) {
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                int sampleSize = BitmapWorkerTask.calculateInSampleSize(width, height, 200, 200);
+
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width/sampleSize, height/sampleSize, true);
+                bitmap.recycle();
+
+                SendBitmapTask task = new SendBitmapTask(client);
+                task.execute(scaledBitmap);
+
+                return scaledBitmap;
+            }
+        });
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
@@ -108,15 +128,48 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        BitmapWorkerTask task = new BitmapWorkerTask(getContentResolver()) {
+            @Override
+            protected void onPostExecute(Type imageType) {
+                switch(imageType) {
+                    case GIF:
+                        imageView.setBytes(imageData);
+                        imageView.startAnimation();
+                        break;
+
+                    case OTHER:
+                        imageView.setImageBitmap(image);
+                        // TODO: send image via send button
+                        SendBitmapTask task = new SendBitmapTask(client);
+
+                        task.execute(image);
+                        break;
+                }
+            }
+        };
+
         if (requestCode == Crop.REQUEST_PICK) {
             if (resultCode == RESULT_OK) {
-                beginCrop(data.getData());
+                Uri imageUri = data.getData();
+
+                String mimeType = BitmapWorkerTask.getMimeType(imageUri, getContentResolver());
+
+                if(mimeType == null)
+                    return;
+
+                if(mimeType.equals(BitmapWorkerTask.GIF_MIMETYPE)) {
+                    // image is gif, so only animate it
+                    task.execute(imageUri);
+                } else {
+                    // if image is no gif, let the user crop the image
+                    //TODO: mimeType unknown if cropped
+                    beginCrop(imageUri, mimeType);
+                }
             }
         } else if (requestCode == Crop.REQUEST_CROP) {
             if (resultCode == RESULT_OK) {
                 Uri croppedImageUri = Crop.getOutput(data);
 
-                BitmapWorkerTask task = new BitmapWorkerTask(imageView, getContentResolver(), client);
                 task.execute(croppedImageUri);
 
                 //sendbutton.setVisibility(Button.VISIBLE);
@@ -132,14 +185,18 @@ public class MainActivity extends AppCompatActivity {
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             // let the user choose a picture to sent
             Crop.pickImage(this);
+            if(imageView.isAnimating())
+                imageView.stopAnimation();
         } else {
             // ask user for READ_EXTERNAL_STORAGE permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST);
         }
     }
 
-    private void beginCrop(Uri source) {
-        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+    private void beginCrop(Uri source, String mimeType) {
+        String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+
+        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped." + extension));
         Crop.of(source, destination).asSquare().start(this);
     }
 

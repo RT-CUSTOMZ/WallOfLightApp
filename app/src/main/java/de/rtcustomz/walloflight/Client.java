@@ -96,7 +96,7 @@ public class Client {
                 clientSocket.send(sendPacket);
             }
             Date end = new Date(System.currentTimeMillis());
-            Log.i("WallOfLightApp", "send " + loop + " pictures in " + (end.getTime() - start.getTime()) + " ms to: " + wol_address.getHostAddress());
+            //Log.i("WallOfLightApp", "send " + loop + " pictures in " + (end.getTime() - start.getTime()) + " ms to: " + wol_address.getHostAddress());
 
             clientSocket.close();
         } catch (Exception e) {
