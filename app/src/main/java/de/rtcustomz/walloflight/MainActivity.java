@@ -91,8 +91,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected  void onPause() {
+        super.onPause();
+
+        stopAllAnimations();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+
         sharedPref.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
     }
 
@@ -112,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            stopAllAnimations();
+
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
 
@@ -207,15 +217,19 @@ public class MainActivity extends AppCompatActivity {
             // let the user choose a picture to sent
             Crop.pickImage(this);
 
-            if(imageView.isAnimating())
-                imageView.stopAnimation();
-
-            if(sendBitmapTask != null && !sendBitmapTask.isCancelled()) {
-                sendBitmapTask.cancel(true);
-            }
+            stopAllAnimations();
         } else {
             // ask user for READ_EXTERNAL_STORAGE permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST);
+        }
+    }
+
+    private void stopAllAnimations() {
+        if(imageView.isAnimating())
+            imageView.stopAnimation();
+
+        if(sendBitmapTask != null && !sendBitmapTask.isCancelled()) {
+            sendBitmapTask.cancel(true);
         }
     }
 
