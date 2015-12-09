@@ -1,15 +1,14 @@
 package de.rtcustomz.walloflight;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -22,24 +21,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.felipecsl.gifimageview.library.GifImageView;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
-import java.net.UnknownHostException;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int CHOOSE_PICTURE_REQUEST = 1;
     public static final int READ_EXTERNAL_STORAGE_REQUEST = 1;
     private GifImageView imageView;
-    //private Bitmap scaledImage = Bitmap.createBitmap(88,88, Bitmap.Config.ARGB_8888);
     private Client client = new Client();
     SharedPreferences sharedPref;
+    AlertDialog.Builder alertDialogBuilder;
+    SendBitmapTask sendBitmapTask;
+
+    boolean animateImage = false;
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -62,22 +59,33 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnFrameAvailable(new GifImageView.OnFrameAvailable() {
             @Override
             public Bitmap onFrameAvailable(Bitmap bitmap) {
-                int width = bitmap.getWidth();
-                int height = bitmap.getHeight();
-                int sampleSize = BitmapWorkerTask.calculateInSampleSize(width, height, 200, 200);
+                //int width = bitmap.getWidth();
+                //int height = bitmap.getHeight();
+                //int sampleSize = BitmapWorkerTask.calculateInSampleSize(width, height, 200, 200);
 
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width/sampleSize, height/sampleSize, true);
-                bitmap.recycle();
+                //Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width/sampleSize, height/sampleSize, true);
 
-                SendBitmapTask task = new SendBitmapTask(client);
-                task.execute(scaledBitmap);
+                if(sendBitmapTask == null) {
+                    sendBitmapTask = new SendBitmapTask(client, animateImage);
+                    sendBitmapTask.execute(bitmap);
+                } else {
+                    switch(sendBitmapTask.getStatus()) {
+                        case FINISHED:
+                            sendBitmapTask = new SendBitmapTask(client, animateImage);
+                            sendBitmapTask.execute(bitmap);
+                            break;
+                    }
+                }
 
-                return scaledBitmap;
+
+                return bitmap;
             }
         });
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+
+        alertDialogBuilder = new AlertDialog.Builder(this);
 
         updateClientSettings();
     }
@@ -128,49 +136,62 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        BitmapWorkerTask task = new BitmapWorkerTask(getContentResolver()) {
-            @Override
-            protected void onPostExecute(Type imageType) {
-                switch(imageType) {
-                    case GIF:
-                        imageView.setBytes(imageData);
-                        imageView.startAnimation();
-                        break;
-
-                    case OTHER:
-                        imageView.setImageBitmap(image);
-                        // TODO: send image via send button
-                        SendBitmapTask task = new SendBitmapTask(client);
-
-                        task.execute(image);
-                        break;
-                }
-            }
-        };
-
         if (requestCode == Crop.REQUEST_PICK) {
             if (resultCode == RESULT_OK) {
-                Uri imageUri = data.getData();
+                final Uri imageUri = data.getData();
 
-                String mimeType = BitmapWorkerTask.getMimeType(imageUri, getContentResolver());
+                final String mimeType = BitmapWorkerTask.getMimeType(imageUri, getContentResolver());
 
                 if(mimeType == null)
                     return;
 
                 if(mimeType.equals(BitmapWorkerTask.GIF_MIMETYPE)) {
-                    // image is gif, so only animate it
-                    task.execute(imageUri);
+                    // image is gif, so only play it
+                    new BitmapWorkerTask(getContentResolver()) {
+                        @Override
+                        protected void onPostExecute(Type imageType) {
+                            imageView.setBytes(imageData);
+                            imageView.startAnimation();
+                        }
+                    }.execute(imageUri);
                 } else {
-                    // if image is no gif, let the user crop the image
-                    //TODO: mimeType unknown if cropped
-                    beginCrop(imageUri, mimeType);
+                    // let the user choose if the image should be animated
+
+                    DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch(which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    animateImage = true;
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    animateImage = false;
+                                    break;
+                            }
+
+                            beginCrop(imageUri, mimeType);
+                        }
+                    };
+
+                    alertDialogBuilder.setMessage(R.string.dialog_animate_image)
+                            .setPositiveButton(R.string.yes, buttonListener)
+                            .setNegativeButton(R.string.no, buttonListener)
+                            .show();
                 }
             }
         } else if (requestCode == Crop.REQUEST_CROP) {
             if (resultCode == RESULT_OK) {
-                Uri croppedImageUri = Crop.getOutput(data);
+                new BitmapWorkerTask(getContentResolver()) {
+                    @Override
+                    protected void onPostExecute(Type imageType) {
+                        imageView.setImageBitmap(image);
 
-                task.execute(croppedImageUri);
+                        // TODO: send image via send button
+                        sendBitmapTask = new SendBitmapTask(client, animateImage);
+                        sendBitmapTask.execute(image);
+                    }
+                }.execute(Crop.getOutput(data));
 
                 //sendbutton.setVisibility(Button.VISIBLE);
             } else if (resultCode == Crop.RESULT_ERROR) {
@@ -185,8 +206,13 @@ public class MainActivity extends AppCompatActivity {
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             // let the user choose a picture to sent
             Crop.pickImage(this);
+
             if(imageView.isAnimating())
                 imageView.stopAnimation();
+
+            if(sendBitmapTask != null && !sendBitmapTask.isCancelled()) {
+                sendBitmapTask.cancel(true);
+            }
         } else {
             // ask user for READ_EXTERNAL_STORAGE permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST);
@@ -197,7 +223,12 @@ public class MainActivity extends AppCompatActivity {
         String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
 
         Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped." + extension));
-        Crop.of(source, destination).asSquare().start(this);
+
+        if(animateImage) {
+            Crop.of(source, destination).start(this);
+        } else {
+            Crop.of(source, destination).asSquare().start(this);
+        }
     }
 
 //    public void sendUDPPacket(View view) {

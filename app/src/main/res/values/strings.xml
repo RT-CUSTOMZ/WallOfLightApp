@@ -30,6 +30,9 @@
     <string name="pref_title_ip">IP-Address</string>
     <string name="pref_key_ip" translatable="false">sync_ip</string>
     <string name="pref_default_ip" translatable="false">192.168.120.73</string>
+    <string name="dialog_animate_image">Animate image?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- END Strings related to Settings -->
 
