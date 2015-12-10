@@ -59,11 +59,11 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnFrameAvailable(new GifImageView.OnFrameAvailable() {
             @Override
             public Bitmap onFrameAvailable(Bitmap bitmap) {
-                //int width = bitmap.getWidth();
-                //int height = bitmap.getHeight();
-                //int sampleSize = BitmapWorkerTask.calculateInSampleSize(width, height, 200, 200);
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                int sampleSize = BitmapWorkerTask.calculateInSampleSize(width, height, 200, 200);
 
-                //Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width/sampleSize, height/sampleSize, true);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width/sampleSize, height/sampleSize, true);
 
                 if(sendBitmapTask == null) {
                     sendBitmapTask = new SendBitmapTask(client, animateImage);
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                return bitmap;
+                return scaledBitmap;//bitmap;
             }
         });
 
@@ -157,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if(mimeType.equals(BitmapWorkerTask.GIF_MIMETYPE)) {
                     // image is gif, so only play it
+                    animateImage = false;
+
                     new BitmapWorkerTask(getContentResolver()) {
                         @Override
                         protected void onPostExecute(Type imageType) {

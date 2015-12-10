@@ -86,7 +86,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
                 }
             }
         } else {
-            Bitmap scaledImage = Bitmap.createScaledBitmap(image, 88, 88, false);
+            Bitmap scaledImage = Bitmap.createScaledBitmap(image, 88, 88, true);
             client.sendImage(scaledImage);
         }
 
