@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.felipecsl.gifimageview.library.GifImageView;
@@ -33,6 +34,8 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
     public static final int READ_EXTERNAL_STORAGE_REQUEST = 1;
     private GifImageView imageView;
+    private Button sendImageButton;
+    private Button toggleAnimationButton;
     private Client client = new Client();
     SharedPreferences sharedPref;
     AlertDialog.Builder alertDialogBuilder;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         imageView = (GifImageView) findViewById(R.id.imageView);
+        sendImageButton = (Button) findViewById(R.id.sendImageButton);
+        toggleAnimationButton = (Button) findViewById(R.id.toggleAnimationButton);
 
         imageView.setOnFrameAvailable(new GifImageView.OnFrameAvailable() {
             @Override
@@ -151,10 +156,14 @@ public class MainActivity extends AppCompatActivity {
         BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(getContentResolver()) {
             @Override
             protected void onPostExecute(BitmapWorkerTask.Type imageType) {
+                toggleAnimationButton.setVisibility(Button.INVISIBLE);
+                sendImageButton.setVisibility(Button.INVISIBLE);
+                sendImageButton.setText(R.string.sendImageButton);
                 switch(imageType) {
                     case GIF:
                         imageView.setBytes(imageData);
                         imageView.startAnimation();
+                        toggleAnimationButton.setVisibility(Button.VISIBLE);
                         break;
 
                     case OTHER:
@@ -163,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
                         // TODO: send image via send button
                         sendBitmapTask = new SendBitmapTask(client, animateImage);
                         sendBitmapTask.execute(image);
+                        if(animateImage) {
+                            sendImageButton.setText(R.string.toggleAnimationButton);
+                        }
+                        sendImageButton.setVisibility(Button.VISIBLE);
                         break;
                 }
             }
@@ -282,6 +295,32 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(getApplicationContext(), getString(R.string.wifiErrorToast), Toast.LENGTH_LONG).show();
 //        }
 //    }
+
+    public void sendImage(View view) {
+        if(animateImage){
+            if(!sendBitmapTask.isCancelled()) {
+                stopAllAnimations();
+            } else {
+//                sendBitmapTask = new SendBitmapTask(client, animateImage);
+//                sendBitmapTask.execute(image);
+//                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                Toast.makeText(getApplicationContext(), "should animate picture now", Toast.LENGTH_LONG).show();
+            }
+        } else {
+//            sendBitmapTask = new SendBitmapTask(client, animateImage);
+//            sendBitmapTask.execute(image);
+            Toast.makeText(getApplicationContext(), "should send image now", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void toggleGifAnimation(View view) {
+        if(imageView.isAnimating()) {
+            stopAllAnimations();
+        }else {
+            imageView.startAnimation();
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
 
     private void updateClientSettings() {
         client.setGamma(Float.valueOf(sharedPref.getString(getString(R.string.pref_key_gamma), getString(R.string.pref_default_gamma))));

@@ -6,7 +6,6 @@
     <string name="imageErrorToast">Fehler beim laden des skalierten Bildes</string>
     <string name="imageViewDescription">Das Bild das an die Wall of Light gesendet wird</string>
     <string name="selectPictureErrorToast">Keine Anwendung zum öffnen von Bildern gefunden</string>
-    <string name="sendPacketsButton">UDP Pakete senden</string>
     <string name="title_activity_settings">Einstellungen</string>
     <string name="wifiErrorToast">Netzwerkfehler. Stelle sicher dass WLAN verbunden ist!</string>
     <string name="choosePictureRequest">Bild auswählen</string>
@@ -17,4 +16,9 @@
     <string name="pref_title_gamma">Gamma</string>
     <string name="pref_title_ip">IP-Adresse</string>
     <string name="setIpAddressError">Kann IP-Adresse aus Einstellungen nicht setzen.</string>
+    <string name="no">Nein</string>
+    <string name="yes">Ja</string>
+    <string name="toggleAnimationButton">Animation umschalten</string>
+    <string name="sendImageButton">Bild senden</string>
+    <string name="dialog_animate_image">Bild animieren?</string>
 </resources>
