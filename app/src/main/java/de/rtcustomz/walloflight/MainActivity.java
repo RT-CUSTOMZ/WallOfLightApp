@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -67,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
 
                 if(sendBitmapTask == null) {
                     sendBitmapTask = new SendBitmapTask(client, animateImage);
-                    sendBitmapTask.execute(bitmap);
+                    sendBitmapTask.execute(scaledBitmap);
                 } else {
                     switch(sendBitmapTask.getStatus()) {
                         case FINISHED:
                             sendBitmapTask = new SendBitmapTask(client, animateImage);
-                            sendBitmapTask.execute(bitmap);
+                            sendBitmapTask.execute(scaledBitmap);
                             break;
                     }
                 }
@@ -146,6 +148,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(getContentResolver()) {
+            @Override
+            protected void onPostExecute(BitmapWorkerTask.Type imageType) {
+                switch(imageType) {
+                    case GIF:
+                        imageView.setBytes(imageData);
+                        imageView.startAnimation();
+                        break;
+
+                    case OTHER:
+                        imageView.setImageBitmap(image);
+
+                        // TODO: send image via send button
+                        sendBitmapTask = new SendBitmapTask(client, animateImage);
+                        sendBitmapTask.execute(image);
+                        break;
+                }
+            }
+        };
+
         if (requestCode == Crop.REQUEST_PICK) {
             if (resultCode == RESULT_OK) {
                 final Uri imageUri = data.getData();
@@ -158,16 +180,12 @@ public class MainActivity extends AppCompatActivity {
                 if(mimeType.equals(BitmapWorkerTask.GIF_MIMETYPE)) {
                     // image is gif, so only play it
                     animateImage = false;
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-                    new BitmapWorkerTask(getContentResolver()) {
-                        @Override
-                        protected void onPostExecute(Type imageType) {
-                            imageView.setBytes(imageData);
-                            imageView.startAnimation();
-                        }
-                    }.execute(imageUri);
+                    bitmapWorkerTask.execute(imageUri);
                 } else {
                     // let the user choose if the image should be animated
+                    final Window window = getWindow();
 
                     DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
                         @Override
@@ -175,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                             switch(which) {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     animateImage = true;
+                                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
@@ -194,16 +213,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (requestCode == Crop.REQUEST_CROP) {
             if (resultCode == RESULT_OK) {
-                new BitmapWorkerTask(getContentResolver()) {
-                    @Override
-                    protected void onPostExecute(Type imageType) {
-                        imageView.setImageBitmap(image);
-
-                        // TODO: send image via send button
-                        sendBitmapTask = new SendBitmapTask(client, animateImage);
-                        sendBitmapTask.execute(image);
-                    }
-                }.execute(Crop.getOutput(data));
+                bitmapWorkerTask.execute(Crop.getOutput(data));
 
                 //sendbutton.setVisibility(Button.VISIBLE);
             } else if (resultCode == Crop.RESULT_ERROR) {
@@ -233,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
         if(sendBitmapTask != null && !sendBitmapTask.isCancelled()) {
             sendBitmapTask.cancel(true);
         }
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void beginCrop(Uri source, String mimeType) {

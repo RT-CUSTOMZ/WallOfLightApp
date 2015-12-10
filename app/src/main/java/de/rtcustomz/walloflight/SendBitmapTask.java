@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
     private final WeakReference<Client> clientReference;
-    boolean animateImage;
+    private boolean animateImage;
 
     SendBitmapTask(Client client, boolean animateImage) {
         clientReference = new WeakReference<>(client);
@@ -48,27 +48,27 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
 
                 switch(mode) {
                     case 1:
-                        x+=sampleSize;
+                        x+=pixelsMoving;
                         if(x+snippetScale >= image.getWidth()) {
                             x = image.getWidth()-snippetScale;
                             mode = 2;
                         }
                         break;
                     case 2:
-                        y+=sampleSize;
+                        y+=pixelsMoving;
                         if(y+snippetScale >= image.getHeight()) {
                             y = image.getHeight()-snippetScale;
                             mode = 3;
                         }
                         break;
                     case 3:
-                        x-=sampleSize;
+                        x-=pixelsMoving;
                         if(x<0) x=0;
                         if(x == 0)
                             mode = 4;
                         break;
                     case 4:
-                        y-=sampleSize;
+                        y-=pixelsMoving;
                         if(y<0) y=0;
                         if(y == 0)
                             mode = 1;
