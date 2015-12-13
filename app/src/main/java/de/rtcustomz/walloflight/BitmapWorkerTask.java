@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import com.google.common.net.MediaType;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -20,36 +22,30 @@ import java.lang.ref.WeakReference;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 
-public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type> {
+public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
     private static final String TAG = "BitmapWorkerTask";
 
     private final WeakReference<ContentResolver> contentResolverReference;
     public Bitmap image;
     public byte[] imageData;
 
-    public static final String GIF_MIMETYPE = "image/gif";
-
-    public static enum Type {
-        GIF, OTHER
-    }
-
     public BitmapWorkerTask(ContentResolver contentResolver) {
         contentResolverReference = new WeakReference<>(contentResolver);
     }
 
     @Override
-    protected Type doInBackground(Uri... params) {
+    protected MediaType doInBackground(Uri... params) {
         final Uri imageUri = params[0];
 
         ContentResolver contentResolver = contentResolverReference.get();
 
-        String mimeType = getMimeType(imageUri, contentResolver);
+        String mimeType = BitmapHelperClass.getMimeType(imageUri, contentResolver);
         Log.e(TAG, "MIMEType: " + mimeType);
 
         if(mimeType == null)
             return null;
 
-        if(mimeType.equals(GIF_MIMETYPE)) {
+        if(mimeType.equals(MediaType.GIF.toString())) {
             InputStream is = null;
 
             try {
@@ -57,7 +53,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type
 
                 imageData = IOUtils.toByteArray(is);
 
-                return Type.GIF;
+                return MediaType.GIF;
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Couldn't find file", e);
             } catch (IOException e) {
@@ -66,54 +62,21 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type
                 Log.e(TAG, "Out of memory during decoding image " + imageUri.getPath(), e);
             } finally {
                 try {
-                    is.close();
+                    if(is != null)
+                        is.close();
                 } catch (IOException ignored) { }
             }
         } else {
             try {
                 image = decodeBitmapFromUri(imageUri, 200, 200);
 
-                /*File croppedImage = new File(imageUri.getPath());
-                if (croppedImage.exists()) {
-                    croppedImage.delete();
-                }*/
-
-                return Type.OTHER;
+                return MediaType.ANY_IMAGE_TYPE;
             } catch (IOException e) {
                 Log.e(TAG, "IO exception", e);
             }
         }
 
         return null;
-    }
-
-    public static int calculateInSampleSize(int origWidth, int origHeight, int reqWidth, int reqHeight) {
-        int inSampleSize = 1;
-
-        if (origHeight > reqHeight || origWidth > reqWidth) {
-
-            final int halfHeight = origHeight / 2;
-            final int halfWidth = origWidth / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-
-        return inSampleSize;
-    }
-
-    public static String getMimeType(Uri uri, ContentResolver contentResolver) {
-        String mimeType = null;
-        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
-            mimeType = contentResolver.getType(uri);
-        } else {
-            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
-            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase());
-        }
-        return mimeType;
     }
 
     private Bitmap decodeBitmapFromUri(Uri imageUri, int reqWidth, int reqHeight) throws IOException {
@@ -132,7 +95,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type
         is.close();
 
         // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options.outWidth, options.outHeight, reqWidth, reqHeight);
+        options.inSampleSize = BitmapHelperClass.calculateInSampleSize(options.outWidth, options.outHeight, reqWidth, reqHeight);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
@@ -144,7 +107,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type
 
         is.close();
 
-        int orientation = getOrientation(contentResolver, imageUri);
+        int orientation = BitmapHelperClass.getOrientation(imageUri);
 
         if (orientation > 0) {
             Matrix matrix = new Matrix();
@@ -153,27 +116,5 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, BitmapWorkerTask.Type
             srcBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(), srcBitmap.getHeight(), matrix, true);
         }
         return srcBitmap;
-    }
-
-    private int getOrientation(ContentResolver contentResolver, Uri photoUri) {
-        File imageFile = new File(photoUri.getPath());
-
-        try {
-            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
-            // We only recognize a subset of orientation tag values
-            switch (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    return 90;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    return 180;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    return 270;
-                default:
-                    return ExifInterface.ORIENTATION_UNDEFINED;
-            }
-        } catch (IOException e) {
-            Log.e("WallOfLightApp", e.getMessage());
-            return 0;
-        }
     }
 }

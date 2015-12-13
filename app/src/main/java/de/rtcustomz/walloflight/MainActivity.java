@@ -2,13 +2,15 @@ package de.rtcustomz.walloflight;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -20,13 +22,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.felipecsl.gifimageview.library.GifImageView;
+import com.google.common.net.MediaType;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
@@ -37,11 +39,12 @@ public class MainActivity extends AppCompatActivity {
     private Button sendImageButton;
     private Button toggleAnimationButton;
     private Client client = new Client();
-    SharedPreferences sharedPref;
-    AlertDialog.Builder alertDialogBuilder;
-    SendBitmapTask sendBitmapTask;
+    private SharedPreferences sharedPref;
+    private AlertDialog.Builder alertDialogBuilder;
+    private SendBitmapTask sendBitmapTask;
+    private Bitmap scaledImage;
 
-    boolean animateImage = false;
+    private boolean animateImage = false;
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -68,24 +71,19 @@ public class MainActivity extends AppCompatActivity {
             public Bitmap onFrameAvailable(Bitmap bitmap) {
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
-                int sampleSize = BitmapWorkerTask.calculateInSampleSize(width, height, 200, 200);
+                int sampleSize = BitmapHelperClass.calculateInSampleSize(width, height, 200, 200);
 
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width/sampleSize, height/sampleSize, true);
 
-                if(sendBitmapTask == null) {
-                    sendBitmapTask = new SendBitmapTask(client, animateImage);
-                    sendBitmapTask.execute(scaledBitmap);
-                } else {
-                    switch(sendBitmapTask.getStatus()) {
-                        case FINISHED:
-                            sendBitmapTask = new SendBitmapTask(client, animateImage);
-                            sendBitmapTask.execute(scaledBitmap);
-                            break;
-                    }
+                switch(sendBitmapTask.getStatus()) {
+                    case FINISHED:
+                        sendBitmapTask = new SendBitmapTask(client, animateImage);
+                    case PENDING:
+                        sendBitmapTask.execute(scaledBitmap);
+                        break;
                 }
 
-
-                return scaledBitmap;//bitmap;
+                return scaledBitmap;
             }
         });
 
@@ -151,32 +149,66 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void processGif(byte[] gif) {
+        sendImageButton.setVisibility(Button.INVISIBLE);
+        toggleAnimationButton.setVisibility(Button.VISIBLE);
+
+        animateImage = false;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        imageView.setBytes(gif);
+    }
+
+    private void processImage(Bitmap image) {
+        toggleAnimationButton.setVisibility(Button.INVISIBLE);
+        sendImageButton.setVisibility(Button.VISIBLE);
+
+        if(animateImage) {
+            sendImageButton.setText(R.string.toggleAnimationButton);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            sendImageButton.setText(R.string.sendImageButton);
+        }
+
+        imageView.setImageBitmap(image);
+        scaledImage = image;
+    }
+
+    private void chooseAnimate(final Uri imageUri, final String mimeType) {
+        DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        animateImage = true;
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        animateImage = false;
+                        break;
+                }
+
+                beginCrop(imageUri, mimeType);
+            }
+        };
+
+        alertDialogBuilder.setMessage(R.string.dialog_animate_image)
+                .setPositiveButton(R.string.yes, buttonListener)
+                .setNegativeButton(R.string.no, buttonListener)
+                .show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(getContentResolver()) {
             @Override
-            protected void onPostExecute(BitmapWorkerTask.Type imageType) {
-                toggleAnimationButton.setVisibility(Button.INVISIBLE);
-                sendImageButton.setVisibility(Button.INVISIBLE);
-                sendImageButton.setText(R.string.sendImageButton);
-                switch(imageType) {
-                    case GIF:
-                        imageView.setBytes(imageData);
-                        imageView.startAnimation();
-                        toggleAnimationButton.setVisibility(Button.VISIBLE);
-                        break;
-
-                    case OTHER:
-                        imageView.setImageBitmap(image);
-
-                        // TODO: send image via send button
-                        sendBitmapTask = new SendBitmapTask(client, animateImage);
-                        sendBitmapTask.execute(image);
-                        if(animateImage) {
-                            sendImageButton.setText(R.string.toggleAnimationButton);
-                        }
-                        sendImageButton.setVisibility(Button.VISIBLE);
-                        break;
+            protected void onPostExecute(MediaType imageType) {
+                if(imageType.equals(MediaType.GIF)) {
+                    processGif(imageData);
+                } else if(imageType.equals(MediaType.ANY_IMAGE_TYPE)) {
+                    processImage(image);
+                } else {
+                    Toast.makeText(MainActivity.this, getString(R.string.imageErrorToast), Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -185,50 +217,21 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 final Uri imageUri = data.getData();
 
-                final String mimeType = BitmapWorkerTask.getMimeType(imageUri, getContentResolver());
+                final String mimeType = BitmapHelperClass.getMimeType(imageUri, getContentResolver());
 
                 if(mimeType == null)
                     return;
 
-                if(mimeType.equals(BitmapWorkerTask.GIF_MIMETYPE)) {
-                    // image is gif, so only play it
-                    animateImage = false;
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+                if(mimeType.equals(MediaType.GIF.toString())) {
                     bitmapWorkerTask.execute(imageUri);
                 } else {
                     // let the user choose if the image should be animated
-                    final Window window = getWindow();
-
-                    DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch(which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    animateImage = true;
-                                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                                    break;
-
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    animateImage = false;
-                                    break;
-                            }
-
-                            beginCrop(imageUri, mimeType);
-                        }
-                    };
-
-                    alertDialogBuilder.setMessage(R.string.dialog_animate_image)
-                            .setPositiveButton(R.string.yes, buttonListener)
-                            .setNegativeButton(R.string.no, buttonListener)
-                            .show();
+                    chooseAnimate(imageUri, mimeType);
                 }
             }
         } else if (requestCode == Crop.REQUEST_CROP) {
             if (resultCode == RESULT_OK) {
                 bitmapWorkerTask.execute(Crop.getOutput(data));
-
-                //sendbutton.setVisibility(Button.VISIBLE);
             } else if (resultCode == Crop.RESULT_ERROR) {
                 Toast.makeText(this, Crop.getError(data).getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -272,44 +275,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    public void sendUDPPacket(View view) {
-//        //
-//        boolean wifiConnected;
-//        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-//        if (activeInfo != null && activeInfo.isConnected()) {
-//            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
-//        } else {
-//            wifiConnected=false;
-//        }
-//        //
-//        if(wifiConnected) {
-//            if(scaledImage!=null) {
-//                client.sendImage(scaledImage);
-//            }
-//            else {
-//                Toast.makeText(getApplicationContext(), getString(R.string.imageErrorToast), Toast.LENGTH_LONG).show();
-//            }
-//        }
-//        else {
-//            Toast.makeText(getApplicationContext(), getString(R.string.wifiErrorToast), Toast.LENGTH_LONG).show();
-//        }
-//    }
+    private boolean wifiConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+
+        if (activeInfo != null && activeInfo.isConnected()) {
+            return activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+        } else {
+            return false;
+        }
+    }
 
     public void sendImage(View view) {
-        if(animateImage){
-            if(!sendBitmapTask.isCancelled()) {
+        switch(sendBitmapTask.getStatus()) {
+            case FINISHED:
+                sendBitmapTask = new SendBitmapTask(client, animateImage);
+            case PENDING:
+                if(!wifiConnected()) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.wifiErrorToast), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                sendBitmapTask.execute(scaledImage);
+                if(animateImage) {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                break;
+            case RUNNING:
                 stopAllAnimations();
-            } else {
-//                sendBitmapTask = new SendBitmapTask(client, animateImage);
-//                sendBitmapTask.execute(image);
-//                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                Toast.makeText(getApplicationContext(), "should animate picture now", Toast.LENGTH_LONG).show();
-            }
-        } else {
-//            sendBitmapTask = new SendBitmapTask(client, animateImage);
-//            sendBitmapTask.execute(image);
-            Toast.makeText(getApplicationContext(), "should send image now", Toast.LENGTH_LONG).show();
+                break;
         }
     }
 
@@ -317,6 +311,11 @@ public class MainActivity extends AppCompatActivity {
         if(imageView.isAnimating()) {
             stopAllAnimations();
         }else {
+            if(!wifiConnected()) {
+                Toast.makeText(getApplicationContext(), getString(R.string.wifiErrorToast), Toast.LENGTH_LONG).show();
+                return;
+            }
+
             imageView.startAnimation();
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }

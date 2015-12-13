@@ -24,7 +24,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
         if(image == null)
             return null;
 
-        int sampleSize = BitmapWorkerTask.calculateInSampleSize(image.getWidth(), image.getHeight(), 88, 88);
+        int sampleSize = BitmapHelperClass.calculateInSampleSize(image.getWidth(), image.getHeight(), 88, 88);
         Client client = clientReference.get();
 
         if(animateImage) {

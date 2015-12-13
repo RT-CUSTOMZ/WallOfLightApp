@@ -6,7 +6,7 @@
     <string name="toggleAnimationButton">Toggle Animation</string>
     <string name="imageViewDescription">The Picture that will be sent to the Wall of Light</string>
     <string name="choosePictureRequest">Select Picture</string>
-    <string name="imageErrorToast">Failed to load scaled image!</string>
+    <string name="imageErrorToast">Failed to process image!</string>
     <string name="wifiErrorToast">Network Error. Make sure to activate WiFi!</string>
     <string name="selectPictureErrorToast">Couldn\'t find any app to open a picture.</string>
     <string name="setIpAddressError">Couldn\'t set IP-Address from Settings.</string>
