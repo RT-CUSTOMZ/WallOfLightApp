@@ -21,4 +21,7 @@
     <string name="toggleAnimationButton">Animation umschalten</string>
     <string name="sendImageButton">Bild senden</string>
     <string name="dialog_animate_image">Bild animieren?</string>
+    <string name="unknownHostError">Verbindung zu der angegebenen IP-Adresse fehlgeschlagen.</string>
+    <string name="connectionInterrupted">Verbindung unterbrochen.</string>
+    <string name="unknownError">Hoppla, da ist wohl etwas schief gelaufen!</string>
 </resources>

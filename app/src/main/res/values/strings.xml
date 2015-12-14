@@ -34,6 +34,9 @@
     <string name="dialog_animate_image">Animate image?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="unknownHostError">Couldn\'t connect to the given IP address.</string>
+    <string name="connectionInterrupted">Connection interrupted.</string>
+    <string name="unknownError">Whoops something went wrong!</string>
 
     <!-- END Strings related to Settings -->
 

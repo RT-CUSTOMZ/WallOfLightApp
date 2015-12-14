@@ -1,20 +1,45 @@
 package de.rtcustomz.walloflight;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Date;
 
-public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
+public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
     private final WeakReference<Client> clientReference;
+    private final WeakReference<Context> contextReference;
     private boolean animateImage;
 
-    SendBitmapTask(Client client, boolean animateImage) {
+    SendBitmapTask(Context context, Client client, boolean animateImage) {
+        contextReference = new WeakReference<>(context);
         clientReference = new WeakReference<>(client);
         this.animateImage = animateImage;
+    }
+    
+    @Override
+    protected void onProgressUpdate(Exception... values) {
+        Exception e = values[0];
+
+        Context context = contextReference.get();
+
+        String error = "";
+        if(e instanceof UnknownHostException) {
+            error = context.getString(R.string.unknownHostError);
+        } else if(e instanceof IOException) {
+            error = context.getString(R.string.connectionInterrupted);
+        } else {
+            error = context.getString(R.string.unknownError);
+        }
+
+        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -43,8 +68,11 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
                 Bitmap snippet = Bitmap.createBitmap(image, x, y, snippetScale, snippetScale);
                 scaledImage = Bitmap.createScaledBitmap(snippet, 88, 88, true);
 
-
-                client.sendImage(scaledImage);
+                try {
+                    client.sendImage(scaledImage);
+                } catch (Exception e) {
+                    publishProgress(e);
+                }
 
                 switch(mode) {
                     case 1:
@@ -87,7 +115,11 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Void, Void> {
             }
         } else {
             Bitmap scaledImage = Bitmap.createScaledBitmap(image, 88, 88, true);
-            client.sendImage(scaledImage);
+            try {
+                client.sendImage(scaledImage);
+            } catch (Exception e) {
+                publishProgress(e);
+            }
         }
 
         return null;
