@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch(sendBitmapTask.getStatus()) {
                     case FINISHED:
-                        sendBitmapTask = new SendBitmapTask(client, animateImage);
+                        sendBitmapTask = new SendBitmapTask(MainActivity.this, client, animateImage);
                     case PENDING:
                         sendBitmapTask.execute(scaledBitmap);
                         break;
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, getString(R.string.imageErrorToast), Toast.LENGTH_SHORT).show();
                 }
 
-                sendBitmapTask = new SendBitmapTask(client, animateImage);
+                sendBitmapTask = new SendBitmapTask(MainActivity.this, client, animateImage);
             }
         };
 
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
     public void sendImage(View view) {
         switch(sendBitmapTask.getStatus()) {
             case FINISHED:
-                sendBitmapTask = new SendBitmapTask(client, animateImage);
+                sendBitmapTask = new SendBitmapTask(MainActivity.this, client, animateImage);
             case PENDING:
                 if(!wifiConnected()) {
                     Toast.makeText(getApplicationContext(), getString(R.string.wifiErrorToast), Toast.LENGTH_LONG).show();
