@@ -1,26 +1,26 @@
-package de.rtcustomz.walloflight;
+package de.rtcustomz.walloflight.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import de.rtcustomz.walloflight.R;
+
 public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
-    private final WeakReference<Client> clientReference;
+    //private final WeakReference<Client> clientReference;
     private final WeakReference<Context> contextReference;
     private boolean animateImage;
 
-    SendBitmapTask(Context context, Client client, boolean animateImage) {
+    public SendBitmapTask(Context context, /*Client client,*/ boolean animateImage) {
         contextReference = new WeakReference<>(context);
-        clientReference = new WeakReference<>(client);
+        //clientReference = new WeakReference<>(client);
         this.animateImage = animateImage;
     }
     
@@ -50,7 +50,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
             return null;
 
         int sampleSize = BitmapHelperClass.calculateInSampleSize(image.getWidth(), image.getHeight(), 88, 88);
-        Client client = clientReference.get();
+        //Client client = clientReference.get();
 
         if(animateImage) {
             int mode = 1, x = 0, y = 0;
@@ -69,7 +69,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
                 scaledImage = Bitmap.createScaledBitmap(snippet, 88, 88, true);
 
                 try {
-                    client.sendImage(scaledImage);
+                    Client.sendImage(scaledImage);
                 } catch (Exception e) {
                     publishProgress(e);
                 }
@@ -116,7 +116,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
         } else {
             Bitmap scaledImage = Bitmap.createScaledBitmap(image, 88, 88, true);
             try {
-                client.sendImage(scaledImage);
+                Client.sendImage(scaledImage);
             } catch (Exception e) {
                 publishProgress(e);
             }

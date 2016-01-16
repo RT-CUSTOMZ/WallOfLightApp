@@ -1,4 +1,4 @@
-package de.rtcustomz.walloflight;
+package de.rtcustomz.walloflight.util;
 
 
 import android.text.InputFilter;

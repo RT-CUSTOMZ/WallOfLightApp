@@ -1,8 +1,9 @@
-package de.rtcustomz.walloflight;
+package de.rtcustomz.walloflight.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,35 +11,68 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
-public class Client {
+public final class Client {// implements Parcelable {
 
     //private final static int PACKETSIZE_MAX = 572;
     private static byte[] gamma_correction_table = new byte[256];
     private static String wol_ip;
-    byte[][] sorted_rgb_byte_array = new byte[51][504];
-    DatagramSocket clientSocket;
+//    byte[][] sorted_rgb_byte_array = new byte[51][504];
+//    DatagramSocket clientSocket;
 
-    public void setGamma(double gamma) {
+    private Client() {
+
+    }
+
+    /*public Client(Parcel in) {
+        in.readByteArray(this.gamma_correction_table);
+        wol_ip = in.readString();
+    }
+
+    public static final Parcelable.Creator<Client> CREATOR = new Parcelable.Creator<Client>() {
+        @Override
+        public Client createFromParcel(Parcel in) {
+            return new Client(in);
+        }
+
+        @Override
+        public Client[] newArray(int size) {
+            return new Client[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByteArray(this.gamma_correction_table);
+        dest.writeString(wol_ip);
+    }*/
+
+    public static void setGamma(double gamma) {
         initialize_gamma_table(gamma);
     }
 
-    public void setIP(String ip_address) {
+    public static void setIP(String ip_address) {
         wol_ip = ip_address;
     }
 
-    private void initialize_gamma_table(double gamma) {
+    private static void initialize_gamma_table(double gamma) {
         for (double i = 0; i <= 255; i++) {
             gamma_correction_table[(int) i] = (byte) (Math.pow(i / 255, gamma) * 255 + 0.5);
         }
     }
 
-    public void sendImage(Bitmap image) throws Exception {
+    public static void sendImage(Bitmap image) throws Exception {
         InetAddress wol_address = InetAddress.getByName(wol_ip);
-        clientSocket = new DatagramSocket();
+        byte[][] sorted_rgb_byte_array = new byte[51][504];
+        DatagramSocket clientSocket = new DatagramSocket();
         DatagramPacket sendPacket;
         byte[] sendData;
 
-        Date start = new Date(System.currentTimeMillis());
+        //Date start = new Date(System.currentTimeMillis());
         int loop;
         for (loop = 0; loop < 1; loop++) {
 
@@ -94,7 +128,7 @@ public class Client {
             sendPacket = new DatagramPacket(ArtNetPacket.ArtSyncPacket, ArtNetPacket.ArtSyncPacket.length, wol_address, 6454);
             clientSocket.send(sendPacket);
         }
-        Date end = new Date(System.currentTimeMillis());
+        //Date end = new Date(System.currentTimeMillis());
         //Log.i("WallOfLightApp", "send " + loop + " pictures in " + (end.getTime() - start.getTime()) + " ms to: " + wol_address.getHostAddress());
 
         clientSocket.close();

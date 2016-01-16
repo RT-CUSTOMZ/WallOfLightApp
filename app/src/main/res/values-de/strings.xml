@@ -2,26 +2,49 @@
 <resources>
     <string name="app_name">Wall of Light</string>
     <string name="action_settings">Einstellungen</string>
+
+<!-- START ProcessImageFragment related strings -->
     <string name="choosePictureButton">Ein Bild auswählen</string>
-    <string name="imageErrorToast">Fehler beim Verarbeiten des Bildes</string>
+    <string name="sendImageButton">Bild senden</string>
+    <string name="toggleAnimationButton">Animation umschalten</string>
     <string name="imageViewDescription">Das Bild das an die Wall of Light gesendet wird</string>
-    <string name="selectPictureErrorToast">Keine Anwendung zum öffnen von Bildern gefunden</string>
-    <string name="title_activity_settings">Einstellungen</string>
-    <string name="wifiErrorToast">Netzwerkfehler. Stelle sicher dass WLAN verbunden ist!</string>
     <string name="choosePictureRequest">Bild auswählen</string>
-    <string name="pref_header_data_sync">Daten &amp; Sync</string>
+<!-- END ProcessImageFragment related strings -->
+
+<!-- START DrawingFragment related strings -->
+    <string name="start_new">Neu</string>
+    <string name="brush">Brush</string>
+    <string name="erase">Löschen</string>
+    <string name="save">Speichern</string>
+    <string name="paint">Paint</string>
+    <string name="sml">Klein</string>
+    <string name="med">Mittel</string>
+    <string name="lrg">Groß</string>
+<!-- END DrawingFragment related strings -->
+
+<!-- START connection and input errors -->
+    <string name="imageErrorToast">Fehler beim Verarbeiten des Bildes</string>
+    <string name="wifiErrorToast">Netzwerkfehler. Stelle sicher dass WLAN verbunden ist!</string>
+    <string name="selectPictureErrorToast">Keine Anwendung zum öffnen von Bildern gefunden</string>
+    <string name="setIpAddressError">Kann IP-Adresse aus Einstellungen nicht setzen.</string>
+    <string name="unknownHostError">Verbindung zu der angegebenen IP-Adresse fehlgeschlagen.</string>
+    <string name="connectionInterrupted">Verbindung unterbrochen.</string>
+    <string name="unknownError">Hoppla, da ist wohl etwas schief gelaufen!</string>
+<!-- END connection and input errors -->
+
+<!-- START Strings related to Settings -->
+    <string name="title_activity_settings">Einstellungen</string>
     <string name="pref_header_general">Allgemein</string>
+    <string name="pref_header_data_sync">Daten &amp; Sync</string>
     <string name="pref_title_resolutionX">Auflösung X</string>
     <string name="pref_title_resolutionY">Auflösung Y</string>
     <string name="pref_title_gamma">Gamma</string>
     <string name="pref_title_ip">IP-Adresse</string>
-    <string name="setIpAddressError">Kann IP-Adresse aus Einstellungen nicht setzen.</string>
+<!-- END Strings related to Settings -->
+
+<!--
+    <string name="dialog_animate_image">Bild animieren?</string>
     <string name="no">Nein</string>
     <string name="yes">Ja</string>
-    <string name="toggleAnimationButton">Animation umschalten</string>
-    <string name="sendImageButton">Bild senden</string>
-    <string name="dialog_animate_image">Bild animieren?</string>
-    <string name="unknownHostError">Verbindung zu der angegebenen IP-Adresse fehlgeschlagen.</string>
-    <string name="connectionInterrupted">Verbindung unterbrochen.</string>
-    <string name="unknownError">Hoppla, da ist wohl etwas schief gelaufen!</string>
+-->
 </resources>

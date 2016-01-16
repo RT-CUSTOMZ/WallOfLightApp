@@ -1,4 +1,4 @@
-package de.rtcustomz.walloflight;
+package de.rtcustomz.walloflight.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

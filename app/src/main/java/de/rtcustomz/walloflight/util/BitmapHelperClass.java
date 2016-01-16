@@ -1,4 +1,4 @@
-package de.rtcustomz.walloflight;
+package de.rtcustomz.walloflight.util;
 
 import android.content.ContentResolver;
 import android.media.ExifInterface;
@@ -9,7 +9,10 @@ import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.IOException;
 
-public class BitmapHelperClass {
+public final class BitmapHelperClass {
+    private BitmapHelperClass() {
+
+    }
     public static String getMimeType(Uri uri, ContentResolver contentResolver) {
         String mimeType;
         if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
@@ -44,7 +47,7 @@ public class BitmapHelperClass {
 
         try {
             ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
-            // We only recognize a subset of orientation tag values
+            // We only recognize a subset of orientation tag modes
             switch (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
                     return 90;

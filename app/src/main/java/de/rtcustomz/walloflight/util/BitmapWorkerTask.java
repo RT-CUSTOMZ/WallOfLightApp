@@ -1,26 +1,21 @@
-package de.rtcustomz.walloflight;
+package de.rtcustomz.walloflight.util;
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.google.common.net.MediaType;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.net.FileNameMap;
-import java.net.URLConnection;
 
 public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
     private static final String TAG = "BitmapWorkerTask";
