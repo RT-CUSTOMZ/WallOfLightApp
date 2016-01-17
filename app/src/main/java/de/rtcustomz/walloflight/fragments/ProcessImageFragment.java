@@ -223,17 +223,18 @@ public class ProcessImageFragment extends Fragment {
                 beginCrop(imageUri, mimeType);
                 break;
             case Crop.REQUEST_CROP:
+                new BitmapWorkerTask(getContext().getContentResolver()) {
+                    @Override
+                    protected void onPostExecute(MediaType imageType) {
+                        processImage(image);
+                    }
+                }.execute(Crop.getOutput(data));
+                break;
             case REQUEST_GIF:
                 new BitmapWorkerTask(getContext().getContentResolver()) {
                     @Override
                     protected void onPostExecute(MediaType imageType) {
-                        if(imageType.equals(MediaType.GIF)) {
-                            processGif(imageData);
-                        } else if(imageType.equals(MediaType.ANY_IMAGE_TYPE)) {
-                            processImage(image);
-                        } else {
-                            Toast.makeText(getContext(), getString(R.string.imageErrorToast), Toast.LENGTH_SHORT).show();
-                        }
+                        processGif(imageData);
                     }
                 }.execute(data.getData());
                 break;
