@@ -205,6 +205,9 @@ public class ProcessImageFragment extends Fragment {
             case Activity.RESULT_OK:
                 // everything is ok
                 break;
+            case Activity.RESULT_CANCELED:
+                // user has cancelled the request
+                return;
             default:
                 // something went wrong
                 Toast.makeText(getContext(), getString(R.string.unknownError), Toast.LENGTH_SHORT).show();
@@ -281,7 +284,7 @@ public class ProcessImageFragment extends Fragment {
         stopAllAnimations();
 
         if(hasPermissions()) {
-            Intent chooseGif = new Intent(Intent.ACTION_PICK).setType("image/gif");
+            Intent chooseGif = new Intent(Intent.ACTION_GET_CONTENT).setType("image/gif");
             getParentFragment().startActivityForResult(chooseGif, REQUEST_GIF);
         } else {
             askForPermission();
