@@ -102,12 +102,6 @@ public class TabbedFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             Mode mode = Mode.modes[position];
-//            switch(position) {
-//                case 0: return ProcessImageTestFragment.newInstance();
-//                case 1: return ProcessAnimatingImageFragment.newInstance();
-//                case 2: return ProcessGifFragment.newInstance();
-//                default: return null;
-//            }
             return ProcessImageFragment.newInstance(mode);
         }
 

@@ -108,8 +108,6 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 		saveBtn = (ImageButton)rootView.findViewById(R.id.save_btn);
 		saveBtn.setOnClickListener(this);
 
-		getActivity().setTitle(getResources().getString(R.string.app_name));
-
 		return rootView;
 	}
 

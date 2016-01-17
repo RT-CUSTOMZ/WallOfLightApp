@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Wall of Light</string>
+    <string name="email">walloflight@42volt.de</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="navigation_drawer_open">Navigation Drawer öffnen</string>
+    <string name="navigation_drawer_close">Navigation Drawer schließen</string>
+    <string name="Images">Bilder</string>
+    <string name="androidPaint">Paint</string>
+    <string name="gif">Gifs</string>
+    <string name="animate">Bewegte Bilder</string>
 
 <!-- START ProcessImageFragment related strings -->
     <string name="choosePictureButton">Ein Bild auswählen</string>
@@ -40,11 +47,5 @@
     <string name="pref_title_resolutionY">Auflösung Y</string>
     <string name="pref_title_gamma">Gamma</string>
     <string name="pref_title_ip">IP-Adresse</string>
-<!-- END Strings related to Settings -->
-
-<!--
-    <string name="dialog_animate_image">Bild animieren?</string>
-    <string name="no">Nein</string>
-    <string name="yes">Ja</string>
--->
+    <!-- END Strings related to Settings -->
 </resources>

@@ -162,17 +162,18 @@ public class ProcessImageFragment extends Fragment {
                 int height = bitmap.getHeight();
                 int sampleSize = BitmapHelperClass.calculateInSampleSize(width, height, 200, 200);
 
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width / sampleSize, height / sampleSize, true);
+                bitmap = Bitmap.createScaledBitmap(bitmap, width / sampleSize, height / sampleSize, true);
+//                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width / sampleSize, height / sampleSize, true);
 
                 switch (sendBitmapTask.getStatus()) {
                     case FINISHED:
                         sendBitmapTask = new SendBitmapTask(getContext(), false);
                     case PENDING:
-                        sendBitmapTask.execute(scaledBitmap);
+                        sendBitmapTask.execute(bitmap/*scaledBitmap*/);
                         break;
                 }
 
-                return scaledBitmap;
+                return bitmap;//scaledBitmap;
             }
         });
 
@@ -248,6 +249,7 @@ public class ProcessImageFragment extends Fragment {
         sendImageButton.setVisibility(Button.VISIBLE);
 
         imageView.setBytes(gif);
+        imageView.startAnimation();
     }
 
     private void processImage(Bitmap image) {
@@ -263,9 +265,9 @@ public class ProcessImageFragment extends Fragment {
         Uri destination = Uri.fromFile(new File(getContext().getCacheDir(), "cropped." + extension));
 
         if(mode == Mode.ANIMATING) {
-            Crop.of(source, destination).start(getContext(), getParentFragment());
+            Crop.of(source, destination).start(getContext(), /*getParentFragment()*/this);
         } else {
-            Crop.of(source, destination).asSquare().start(getContext(), getParentFragment());
+            Crop.of(source, destination).asSquare().start(getContext(), /*getParentFragment()*/this);
         }
     }
 
@@ -274,7 +276,7 @@ public class ProcessImageFragment extends Fragment {
 
         if(hasPermissions()) {
             // let the user choose a picture to sent
-            Crop.pickImage(getContext(), getParentFragment());
+            Crop.pickImage(getContext(), /*getParentFragment()*/this);
         } else {
             askForPermission();
         }
@@ -285,7 +287,7 @@ public class ProcessImageFragment extends Fragment {
 
         if(hasPermissions()) {
             Intent chooseGif = new Intent(Intent.ACTION_GET_CONTENT).setType("image/gif");
-            getParentFragment().startActivityForResult(chooseGif, REQUEST_GIF);
+            /*getParentFragment()*/this.startActivityForResult(chooseGif, REQUEST_GIF);
         } else {
             askForPermission();
         }

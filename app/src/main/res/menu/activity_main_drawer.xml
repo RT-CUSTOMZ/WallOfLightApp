@@ -2,14 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+        <!--<item-->
+            <!--android:id="@+id/nav_tabs"-->
+            <!--android:icon="@drawable/ic_menu_gallery"-->
+            <!--android:title="@string/Images" />-->
+        <item
+            android:id="@+id/nav_images"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/Images" />
+        <item
+            android:id="@+id/nav_animating"
+            android:icon="@drawable/ic_movie_black_24dp"
+            android:title="@string/animate" />
+        <item
+            android:id="@+id/nav_gif"
+            android:icon="@drawable/ic_gif_black_24dp"
+            android:title="@string/gif" />
         <item
             android:id="@+id/nav_paint"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Paint" />
-        <item
-            android:id="@+id/nav_tabs"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="TabbedFragment" />
+            android:icon="@drawable/ic_color_lens_black_24dp"
+            android:title="@string/androidPaint" />
     </group>
 
 </menu>

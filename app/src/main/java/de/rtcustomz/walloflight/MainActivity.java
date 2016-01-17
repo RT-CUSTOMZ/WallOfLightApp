@@ -21,6 +21,8 @@ import android.view.MenuItem;
 
 import de.rtcustomz.walloflight.activities.SettingsActivity;
 import de.rtcustomz.walloflight.fragments.DrawingFragment;
+import de.rtcustomz.walloflight.fragments.ProcessImageFragment;
+import de.rtcustomz.walloflight.fragments.ProcessImageFragment.Mode;
 import de.rtcustomz.walloflight.fragments.TabbedFragment;
 import de.rtcustomz.walloflight.util.Client;
 
@@ -31,7 +33,10 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences sharedPref;
 
     Fragment drawingFragment;
-    Fragment tabbedFragment;
+    Fragment normalImages;
+    Fragment animatedImages;
+    Fragment gifImages;
+//    Fragment tabbedFragment;
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -56,17 +61,21 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_paint);
 
         drawingFragment = DrawingFragment.newInstance();
-        tabbedFragment = TabbedFragment.newInstance();
+        normalImages = ProcessImageFragment.newInstance(Mode.NORMAL);
+        animatedImages = ProcessImageFragment.newInstance(Mode.ANIMATING);
+        gifImages = ProcessImageFragment.newInstance(Mode.GIF);
+//        tabbedFragment = TabbedFragment.newInstance();
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
         updateClientSettings();
 
-        loadFragment(drawingFragment);
+        loadFragment(normalImages);
+        setTitle(getResources().getString(R.string.Images));
+        navigationView.setCheckedItem(R.id.nav_images);
     }
 
     @Override
@@ -119,9 +128,19 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_paint) {
             loadFragment(drawingFragment);
-        } else if (id == R.id.nav_tabs) {
-            loadFragment(tabbedFragment);
-        }  else {
+            setTitle(getResources().getString(R.string.androidPaint));
+//        } else if (id == R.id.nav_tabs) {
+//            loadFragment(tabbedFragment);
+        } else if(id == R.id.nav_images) {
+            loadFragment(normalImages);
+            setTitle(getResources().getString(R.string.Images));
+        } else if(id == R.id.nav_animating) {
+            loadFragment(animatedImages);
+            setTitle(getResources().getString(R.string.animate));
+        } else if(id == R.id.nav_gif) {
+            loadFragment(gifImages);
+            setTitle(getResources().getString(R.string.gif));
+        } else {
             return false;
         }
 
