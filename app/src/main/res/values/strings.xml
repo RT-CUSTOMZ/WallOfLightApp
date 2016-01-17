@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Wall of Light</string>
-    <string name="email">walloflight@42volt.de</string>
+    <string name="email" translatable="false">walloflight@42volt.de</string>
     <string name="action_settings">Settings</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -28,6 +28,17 @@
     <string name="sml">Small</string>
     <string name="med">Medium</string>
     <string name="lrg">Large</string>
+    <string name="brush_size_title">Brush size:</string>
+    <string name="eraser_size_title">Eraser size:</string>
+    <string name="new_drawing_title">New drawing</string>
+    <string name="save_drawing_title">Save drawing</string>
+    <string name="start_new_drawing_question">Start new drawing (you will lose the current drawing)?</string>
+    <string name="save_drawing_question">Save drawing to device Gallery?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="drawing_saved_success">Drawing saved to Gallery!</string>
+    <string name="drawing_saved_error">Whoops! Image could not be saved.</string>
+    <string name="drawing_description">drawing</string>
 <!-- END DrawingFragment related strings -->
 
 <!-- START connection and input errors -->
@@ -43,7 +54,7 @@
 <!-- START Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
     <string name="pref_header_general">General</string>
-    <string name="pref_header_data_sync">Data &amp; sync</string>
+    <string name="pref_header_data_sync">Network</string>
     <string name="pref_title_resolutionX">Resolution X</string>
     <string name="pref_key_resolutionX" translatable="false">general_resolutionX</string>
     <string name="pref_default_resolutionX" translatable="false">88</string>

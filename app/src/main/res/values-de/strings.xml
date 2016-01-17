@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Wall of Light</string>
-    <string name="email">walloflight@42volt.de</string>
     <string name="action_settings">Einstellungen</string>
     <string name="navigation_drawer_open">Navigation Drawer öffnen</string>
     <string name="navigation_drawer_close">Navigation Drawer schließen</string>
@@ -20,13 +19,24 @@
 
 <!-- START DrawingFragment related strings -->
     <string name="start_new">Neu</string>
-    <string name="brush">Brush</string>
+    <string name="brush">Stift</string>
     <string name="erase">Löschen</string>
     <string name="save">Speichern</string>
     <string name="paint">Paint</string>
     <string name="sml">Klein</string>
     <string name="med">Mittel</string>
     <string name="lrg">Groß</string>
+    <string name="brush_size_title">Stiftgröße:</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="new_drawing_title">Neues Bild</string>
+    <string name="yes">Ja</string>
+    <string name="start_new_drawing_question">Möchtest du ein neues Bild anfangen (das aktuelle Bild geht verloren)?</string>
+    <string name="save_drawing_title">Bild speichern</string>
+    <string name="save_drawing_question">Möchtest du das Bild in der Galerie speichern?</string>
+    <string name="eraser_size_title">Radierergröße:</string>
+    <string name="drawing_description">bild</string>
+    <string name="drawing_saved_error">Hoppla! Das Bild konnte nicht gespeichert werden.</string>
+    <string name="drawing_saved_success">Das Bild wurde in der Galerie gespeichert!</string>
 <!-- END DrawingFragment related strings -->
 
 <!-- START connection and input errors -->
@@ -42,7 +52,7 @@
 <!-- START Strings related to Settings -->
     <string name="title_activity_settings">Einstellungen</string>
     <string name="pref_header_general">Allgemein</string>
-    <string name="pref_header_data_sync">Daten &amp; Sync</string>
+    <string name="pref_header_data_sync">Netzwerk</string>
     <string name="pref_title_resolutionX">Auflösung X</string>
     <string name="pref_title_resolutionY">Auflösung Y</string>
     <string name="pref_title_gamma">Gamma</string>

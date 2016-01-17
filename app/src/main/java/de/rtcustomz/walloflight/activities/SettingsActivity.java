@@ -207,7 +207,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_ip)));
-            EditText editText1 = ((EditTextPreference) findPreference("sync_ip"))
+            EditText editText1 = ((EditTextPreference) findPreference(getString(R.string.pref_key_ip)))
                     .getEditText();
             InputFilter[] filters = new InputFilter[1];
             filters[0] = new InputFilter() {

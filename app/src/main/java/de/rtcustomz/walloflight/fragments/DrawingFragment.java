@@ -21,14 +21,6 @@ import de.rtcustomz.walloflight.dialogs.AlertDialogFragment;
 import de.rtcustomz.walloflight.dialogs.BrushChooser;
 import de.rtcustomz.walloflight.views.DrawingView;
 
-/**
- * This is demo code to accompany the Mobiletuts+ tutorial series:
- * - Android SDK: Create a Drawing App
- * 
- * Sue Smith
- * August 2013
- *
- */
 public class DrawingFragment extends Fragment implements OnClickListener, BrushChooser.OnBrushClickListener, AlertDialogFragment.OnClickListener {
 
 	//custom drawing view
@@ -36,17 +28,8 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 	//buttons
 	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn;
 
-	private static final String ARG_CLIENT = "client";
-	//private Client client;
-
-	public static Fragment newInstance(/*Client client*/) {
-		Fragment fragment = new DrawingFragment();
-
-		/*Bundle args = new Bundle();
-		args.putParcelable(ARG_CLIENT, client);
-		fragment.setArguments(args);*/
-
-		return fragment;
+	public static Fragment newInstance() {
+		return new DrawingFragment();
 	}
 
 	@Override
@@ -58,11 +41,8 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_drawing, container,false);
 
-		//client = getArguments().getParcelable(ARG_CLIENT);
-
 		//get drawing view
 		drawView = (DrawingView)rootView.findViewById(R.id.drawing);
-		//drawView.setClient(client);
 
 		//get the palette and first color button
 		LinearLayout paintColorsTop = (LinearLayout)rootView.findViewById(R.id.paint_colors_top);
@@ -146,16 +126,16 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 		DialogFragment dialog;
 
 		if(view.getId()== R.id.draw_btn) {
-			dialog = BrushChooser.newInstance("Brush size:", false);
+			dialog = BrushChooser.newInstance(getString(R.string.brush_size_title), false);
 		}
 		else if(view.getId()==R.id.erase_btn) {
-			dialog = BrushChooser.newInstance("Eraser size:", true);
+			dialog = BrushChooser.newInstance(getString(R.string.eraser_size_title), true);
 		}
 		else if(view.getId()==R.id.new_btn) {
-			dialog = AlertDialogFragment.newInstance(R.id.new_btn, "New drawing", "Start new drawing (you will lose the current drawing)?", "Yes", "Cancel");
+			dialog = AlertDialogFragment.newInstance(R.id.new_btn, getString(R.string.new_drawing_title), getString(R.string.start_new_drawing_question), getString(R.string.yes), getString(R.string.cancel));
 		}
 		else if(view.getId()==R.id.save_btn) {
-			dialog = AlertDialogFragment.newInstance(R.id.save_btn, "Save drawing", "Save drawing to device Gallery?", "Yes", "Cancel");
+			dialog = AlertDialogFragment.newInstance(R.id.save_btn, getString(R.string.save_drawing_title), getString(R.string.save_drawing_question), getString(R.string.yes), getString(R.string.cancel));
 		} else {
 			return;
 		}
@@ -196,14 +176,14 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 		//attempt to save
 		String imgSaved = MediaStore.Images.Media.insertImage(
 				getActivity().getContentResolver(), drawView.getDrawingCache(),
-				UUID.randomUUID().toString()+".png", "drawing");
+				UUID.randomUUID().toString() + ".png", getString(R.string.drawing_description));
 
 		//feedback
 		if(imgSaved!=null) {
-			Toast savedToast = Toast.makeText(getActivity(), "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
+			Toast savedToast = Toast.makeText(getActivity(), R.string.drawing_saved_success, Toast.LENGTH_SHORT);
 			savedToast.show();
 		} else {
-			Toast unsavedToast = Toast.makeText(getActivity(), "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
+			Toast unsavedToast = Toast.makeText(getActivity(), R.string.drawing_saved_error, Toast.LENGTH_SHORT);
 			unsavedToast.show();
 		}
 

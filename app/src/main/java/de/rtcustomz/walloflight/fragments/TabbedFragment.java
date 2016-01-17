@@ -80,7 +80,7 @@ public class TabbedFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         String tag = makeFragmentName(mViewPager.getId(), mViewPager.getCurrentItem());
-        Log.e("asdasd", tag);
+        //Log.e("asdasd", tag);
         Fragment page = getChildFragmentManager().findFragmentByTag(tag);
         page.onActivityResult(requestCode, resultCode, data);
     }
