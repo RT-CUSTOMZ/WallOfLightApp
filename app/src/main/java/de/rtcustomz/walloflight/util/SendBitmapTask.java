@@ -14,13 +14,11 @@ import java.util.Date;
 import de.rtcustomz.walloflight.R;
 
 public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
-    //private final WeakReference<Client> clientReference;
     private final WeakReference<Context> contextReference;
     private boolean animateImage;
 
-    public SendBitmapTask(Context context, /*Client client,*/ boolean animateImage) {
+    public SendBitmapTask(Context context, boolean animateImage) {
         contextReference = new WeakReference<>(context);
-        //clientReference = new WeakReference<>(client);
         this.animateImage = animateImage;
     }
     
@@ -50,7 +48,6 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
             return null;
 
         int sampleSize = BitmapHelperClass.calculateInSampleSize(image.getWidth(), image.getHeight(), 88, 88);
-        //Client client = clientReference.get();
 
         if(animateImage) {
             int mode = 1, x = 0, y = 0;

@@ -23,7 +23,6 @@ import de.rtcustomz.walloflight.activities.SettingsActivity;
 import de.rtcustomz.walloflight.fragments.DrawingFragment;
 import de.rtcustomz.walloflight.fragments.ProcessImageFragment;
 import de.rtcustomz.walloflight.fragments.ProcessImageFragment.Mode;
-import de.rtcustomz.walloflight.fragments.TabbedFragment;
 import de.rtcustomz.walloflight.util.Client;
 
 public class MainActivity extends AppCompatActivity
@@ -36,7 +35,6 @@ public class MainActivity extends AppCompatActivity
     Fragment normalImages;
     Fragment animatedImages;
     Fragment gifImages;
-//    Fragment tabbedFragment;
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -66,7 +64,6 @@ public class MainActivity extends AppCompatActivity
         normalImages = ProcessImageFragment.newInstance(Mode.NORMAL);
         animatedImages = ProcessImageFragment.newInstance(Mode.ANIMATING);
         gifImages = ProcessImageFragment.newInstance(Mode.GIF);
-//        tabbedFragment = TabbedFragment.newInstance();
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
@@ -129,8 +126,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_paint) {
             loadFragment(drawingFragment);
             setTitle(getResources().getString(R.string.androidPaint));
-//        } else if (id == R.id.nav_tabs) {
-//            loadFragment(tabbedFragment);
         } else if(id == R.id.nav_images) {
             loadFragment(normalImages);
             setTitle(getResources().getString(R.string.Images));
@@ -166,7 +161,6 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.content_frame, fragment);
-        //ft.addToBackStack(null);
         ft.commit();
     }
 
