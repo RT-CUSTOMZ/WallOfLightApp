@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import java.util.UUID;
 
-import de.rtcustomz.walloflight.util.Client;
 import de.rtcustomz.walloflight.R;
 import de.rtcustomz.walloflight.dialogs.AlertDialogFragment;
 import de.rtcustomz.walloflight.dialogs.BrushChooser;
@@ -105,8 +104,6 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 			drawView.setColor(color);
 			//update ui
 			imgView.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
-			// TODO: int paint_pressed = getResources().getIdentifier("paint_pressed", "drawable", getActivity().getPackageName());
-			// TODO: imgView.setImageResource(paint_pressed);
 			currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint));
 			currPaint=(ImageButton)view;
 		}

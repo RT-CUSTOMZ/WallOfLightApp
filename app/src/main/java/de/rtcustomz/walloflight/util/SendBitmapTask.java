@@ -3,7 +3,6 @@ package de.rtcustomz.walloflight.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -54,8 +53,6 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
             int snippetScale = 88 * sampleSize;
 
             int pixelsMoving = sampleSize > 1 ? sampleSize / 2 : 1;
-
-            Log.e("WallOfLightApp", "pixelsMoving: " + pixelsMoving + " imageSize: " + image.getWidth() + "x" + image.getHeight());
 
             Bitmap scaledImage;
 

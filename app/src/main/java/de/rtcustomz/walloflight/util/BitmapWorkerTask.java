@@ -63,7 +63,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
             }
         } else {
             try {
-                image = decodeBitmapFromUri(imageUri, 200, 200);
+                image = decodeBitmapFromUri(imageUri, 400, 400);
 
                 return MediaType.ANY_IMAGE_TYPE;
             } catch (IOException e) {

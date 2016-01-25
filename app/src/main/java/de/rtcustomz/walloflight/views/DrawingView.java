@@ -88,7 +88,6 @@ public class DrawingView extends View {
 				sendBitmapTask = new SendBitmapTask(getContext(), false);
 			case PENDING:
 				setDrawingCacheEnabled(true);
-				// TODO: not very efficient...
 				Bitmap bitmap = Bitmap.createBitmap(getDrawingCache());
 				sendBitmapTask.execute(bitmap);
 				destroyDrawingCache();
