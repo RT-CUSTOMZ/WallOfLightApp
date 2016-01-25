@@ -46,20 +46,9 @@ public class ProcessImageFragment extends Fragment {
     private static final int REQUEST_GIF = 42;
 
     public enum Mode {
-        NORMAL("SEND IMAGE"),
-        ANIMATING("ANIMATE IMAGE"),
-        GIF("SEND GIF");
-
-        private String title;
-        public static final Mode modes[] = values();
-
-        Mode(String title) {
-            this.title = title;
-        }
-
-        public String getTitle() {
-            return title;
-        }
+        NORMAL,
+        ANIMATING,
+        GIF
     }
 
     public ProcessImageFragment() {
@@ -160,20 +149,19 @@ public class ProcessImageFragment extends Fragment {
             public Bitmap onFrameAvailable(Bitmap bitmap) {
                 int width = bitmap.getWidth();
                 int height = bitmap.getHeight();
-                int sampleSize = BitmapHelperClass.calculateInSampleSize(width, height, 200, 200);
+                int sampleSize = BitmapHelperClass.calculateInSampleSize(width, height, 400, 400);
 
                 bitmap = Bitmap.createScaledBitmap(bitmap, width / sampleSize, height / sampleSize, true);
-//                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width / sampleSize, height / sampleSize, true);
 
                 switch (sendBitmapTask.getStatus()) {
                     case FINISHED:
                         sendBitmapTask = new SendBitmapTask(getContext(), false);
                     case PENDING:
-                        sendBitmapTask.execute(bitmap/*scaledBitmap*/);
+                        sendBitmapTask.execute(bitmap);
                         break;
                 }
 
-                return bitmap;//scaledBitmap;
+                return bitmap;
             }
         });
 
@@ -265,9 +253,9 @@ public class ProcessImageFragment extends Fragment {
         Uri destination = Uri.fromFile(new File(getContext().getCacheDir(), "cropped." + extension));
 
         if(mode == Mode.ANIMATING) {
-            Crop.of(source, destination).start(getContext(), /*getParentFragment()*/this);
+            Crop.of(source, destination).start(getContext(), this);
         } else {
-            Crop.of(source, destination).asSquare().start(getContext(), /*getParentFragment()*/this);
+            Crop.of(source, destination).asSquare().start(getContext(), this);
         }
     }
 
@@ -276,7 +264,7 @@ public class ProcessImageFragment extends Fragment {
 
         if(hasPermissions()) {
             // let the user choose a picture to sent
-            Crop.pickImage(getContext(), /*getParentFragment()*/this);
+            Crop.pickImage(getContext(), this);
         } else {
             askForPermission();
         }
@@ -287,7 +275,7 @@ public class ProcessImageFragment extends Fragment {
 
         if(hasPermissions()) {
             Intent chooseGif = new Intent(Intent.ACTION_GET_CONTENT).setType("image/gif");
-            /*getParentFragment()*/this.startActivityForResult(chooseGif, REQUEST_GIF);
+            startActivityForResult(chooseGif, REQUEST_GIF);
         } else {
             askForPermission();
         }
