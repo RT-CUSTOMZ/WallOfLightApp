@@ -17,8 +17,6 @@
     <string name="choosePictureRequest">Select Picture</string>
 <!-- END ProcessImageFragment related strings -->
 
-    <string name="title_activity_tabbed_fragment">TabbedFragment</string>
-
 <!-- START DrawingFragment related strings -->
     <string name="start_new">New</string>
     <string name="brush">Brush</string>
