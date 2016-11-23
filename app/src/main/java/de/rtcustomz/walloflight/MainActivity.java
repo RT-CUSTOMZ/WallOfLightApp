@@ -23,6 +23,7 @@ import de.rtcustomz.walloflight.activities.SettingsActivity;
 import de.rtcustomz.walloflight.fragments.DrawingFragment;
 import de.rtcustomz.walloflight.fragments.ProcessImageFragment;
 import de.rtcustomz.walloflight.fragments.ProcessImageFragment.Mode;
+import de.rtcustomz.walloflight.fragments.TwoZeroGameFragment;
 import de.rtcustomz.walloflight.util.Client;
 
 public class MainActivity extends AppCompatActivity
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     Fragment normalImages;
     Fragment animatedImages;
     Fragment gifImages;
+    Fragment twoZeroGame;
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity
         normalImages = ProcessImageFragment.newInstance(Mode.NORMAL);
         animatedImages = ProcessImageFragment.newInstance(Mode.ANIMATING);
         gifImages = ProcessImageFragment.newInstance(Mode.GIF);
+        twoZeroGame = TwoZeroGameFragment.newInstance();
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
@@ -135,7 +138,10 @@ public class MainActivity extends AppCompatActivity
         } else if(id == R.id.nav_gif) {
             loadFragment(gifImages);
             setTitle(getResources().getString(R.string.gif));
-        } else {
+        } else if(id == R.id.nav_twozero) {
+            loadFragment(twoZeroGame);
+            setTitle(getResources().getString(R.string.twozero));
+        }else {
             return false;
         }
 

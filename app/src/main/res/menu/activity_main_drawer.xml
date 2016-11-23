@@ -18,6 +18,10 @@
             android:id="@+id/nav_paint"
             android:icon="@drawable/ic_color_lens_black_24dp"
             android:title="@string/androidPaint" />
+        <item
+            android:id="@+id/nav_twozero"
+            android:icon="@drawable/logo_2048"
+            android:title="@string/twozero" />
     </group>
 
 </menu>
