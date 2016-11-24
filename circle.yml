@@ -1,6 +1,6 @@
 machine:
-java:
-version: openjdk8
+  java:
+    version: openjdk8
 
 dependencies:
   pre:
