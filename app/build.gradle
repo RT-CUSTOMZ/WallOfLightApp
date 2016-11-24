@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "de.rtcustomz.walloflight"
@@ -25,8 +25,8 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-    compile 'com.felipecsl:gifimageview:2.0.0'
-    compile 'commons-io:commons-io:2.4'
+    compile 'com.felipecsl:gifimageview:2.1.0'
+    compile 'commons-io:commons-io:2.5'
     compile 'com.google.guava:guava:19.0'
     testCompile 'junit:junit:4.12'
 }
