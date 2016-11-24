@@ -73,4 +73,5 @@
     <string name="continue_game">Abbrechen</string>
     <string name="reset_dialog_title">Spiel zurücksetzen?</string>
     <string name="reset_dialog_message">Sind Sie sicher, dass Sie das Spiel zurücksetzen möchten?</string>
+    <string name="twozero">2048 Game</string>
 </resources>
