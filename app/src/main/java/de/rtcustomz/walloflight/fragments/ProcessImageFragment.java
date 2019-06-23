@@ -1,7 +1,6 @@
 package de.rtcustomz.walloflight.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,9 +9,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -191,10 +191,10 @@ public class ProcessImageFragment extends Fragment {
             case Crop.RESULT_ERROR:
                 Toast.makeText(getContext(), Crop.getError(data).getMessage(), Toast.LENGTH_SHORT).show();
                 return;
-            case Activity.RESULT_OK:
+            case AppCompatActivity.RESULT_OK:
                 // everything is ok
                 break;
-            case Activity.RESULT_CANCELED:
+            case AppCompatActivity.RESULT_CANCELED:
                 // user has cancelled the request
                 return;
             default:

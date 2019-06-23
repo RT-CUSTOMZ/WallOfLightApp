@@ -1,7 +1,7 @@
 package de.rtcustomz.walloflight.util;
 
 import android.content.ContentResolver;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
 import android.webkit.MimeTypeMap;

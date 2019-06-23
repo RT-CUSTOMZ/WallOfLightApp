@@ -1,7 +1,7 @@
 package de.rtcustomz.walloflight.twozerogame;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
+import androidx.appcompat.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
 

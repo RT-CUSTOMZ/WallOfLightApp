@@ -11,13 +11,13 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import androidx.core.app.NavUtils;
+import androidx.appcompat.app.ActionBar;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 import android.widget.EditText;
 
 import java.util.List;
@@ -104,7 +104,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
+     * Set up the {@link ActionBar}, if the API is available.
      */
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
