@@ -22,8 +22,8 @@ import android.view.MenuItem;
 import de.rtcustomz.walloflight.activities.SettingsActivity;
 import de.rtcustomz.walloflight.fragments.DrawingFragment;
 import de.rtcustomz.walloflight.fragments.ProcessImageFragment;
-import de.rtcustomz.walloflight.fragments.ProcessImageFragment.Mode;
 import de.rtcustomz.walloflight.fragments.TwoZeroGameFragment;
+import de.rtcustomz.walloflight.model.ImageMode;
 import de.rtcustomz.walloflight.util.Client;
 
 public class MainActivity extends AppCompatActivity
@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         drawingFragment = DrawingFragment.newInstance();
-        normalImages = ProcessImageFragment.newInstance(Mode.NORMAL);
-        animatedImages = ProcessImageFragment.newInstance(Mode.ANIMATING);
-        gifImages = ProcessImageFragment.newInstance(Mode.GIF);
+        normalImages = ProcessImageFragment.newInstance(ImageMode.NORMAL);
+        animatedImages = ProcessImageFragment.newInstance(ImageMode.ANIMATING);
+        gifImages = ProcessImageFragment.newInstance(ImageMode.GIF);
         twoZeroGame = TwoZeroGameFragment.newInstance();
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);

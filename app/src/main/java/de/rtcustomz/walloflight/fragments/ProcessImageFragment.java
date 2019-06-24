@@ -22,7 +22,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.felipecsl.gifimageview.library.GifImageView;
-import com.google.common.net.MediaType;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
@@ -30,6 +29,8 @@ import java.io.File;
 import de.rtcustomz.walloflight.MainActivity;
 import de.rtcustomz.walloflight.R;
 import de.rtcustomz.walloflight.exceptions.WifiNotConnectedException;
+import de.rtcustomz.walloflight.model.ImageMode;
+import de.rtcustomz.walloflight.model.ImageType;
 import de.rtcustomz.walloflight.util.BitmapHelperClass;
 import de.rtcustomz.walloflight.util.BitmapWorkerTask;
 import de.rtcustomz.walloflight.util.SendBitmapTask;
@@ -40,22 +41,16 @@ public class ProcessImageFragment extends Fragment {
     private Button choosePictureButton;
     private SendBitmapTask sendBitmapTask;
     private Bitmap scaledImage;
-    private Mode mode;
+    private ImageMode mode;
 
     private static final String ARG_MODE = "mode";
     private static final int REQUEST_GIF = 42;
-
-    public enum Mode {
-        NORMAL,
-        ANIMATING,
-        GIF
-    }
 
     public ProcessImageFragment() {
         // Required empty public constructor
     }
 
-    public static Fragment newInstance(Mode mode) {
+    public static Fragment newInstance(ImageMode mode) {
         Fragment fragment = new ProcessImageFragment();
 
         Bundle args = new Bundle();
@@ -79,7 +74,7 @@ public class ProcessImageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_process_image, container, false);
-        mode = Mode.valueOf(getArguments().getString(ARG_MODE));
+        mode = ImageMode.valueOf(getArguments().getString(ARG_MODE));
 
         imageView = (GifImageView) rootView.findViewById(R.id.imageView);
         sendImageButton = (Button) rootView.findViewById(R.id.sendImageButton);
@@ -96,7 +91,7 @@ public class ProcessImageFragment extends Fragment {
                 initForGifMode();
         }
 
-        sendBitmapTask = new SendBitmapTask(getContext(), mode == Mode.ANIMATING);
+        sendBitmapTask = new SendBitmapTask(getContext(), mode == ImageMode.ANIMATING);
 
         return rootView;
     }
@@ -217,7 +212,7 @@ public class ProcessImageFragment extends Fragment {
             case Crop.REQUEST_CROP:
                 new BitmapWorkerTask(getContext().getContentResolver()) {
                     @Override
-                    protected void onPostExecute(MediaType imageType) {
+                    protected void onPostExecute(ImageType imageType) {
                         processImage(image);
                     }
                 }.execute(Crop.getOutput(data));
@@ -225,7 +220,7 @@ public class ProcessImageFragment extends Fragment {
             case REQUEST_GIF:
                 new BitmapWorkerTask(getContext().getContentResolver()) {
                     @Override
-                    protected void onPostExecute(MediaType imageType) {
+                    protected void onPostExecute(ImageType imageType) {
                         processGif(imageData);
                     }
                 }.execute(data.getData());
@@ -252,7 +247,7 @@ public class ProcessImageFragment extends Fragment {
 
         Uri destination = Uri.fromFile(new File(getContext().getCacheDir(), "cropped." + extension));
 
-        if(mode == Mode.ANIMATING) {
+        if(mode == ImageMode.ANIMATING) {
             Crop.of(source, destination).start(getContext(), this);
         } else {
             Crop.of(source, destination).asSquare().start(getContext(), this);

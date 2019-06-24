@@ -8,16 +8,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.common.net.MediaType;
-
-import org.apache.commons.io.IOUtils;
-
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
-public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
+import de.rtcustomz.walloflight.model.ImageType;
+
+public class BitmapWorkerTask extends AsyncTask<Uri, Void, ImageType> {
     private static final String TAG = "BitmapWorkerTask";
 
     private final WeakReference<ContentResolver> contentResolverReference;
@@ -28,8 +27,22 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
         contentResolverReference = new WeakReference<>(contentResolver);
     }
 
+    private static byte[] toByteArray(InputStream is) throws IOException {
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        byte[] buf = new byte[1024];
+        int len;
+
+        while ((len = is.read(buf)) != -1) {
+            os.write(buf, 0, len);
+        }
+
+        return os.toByteArray();
+    }
+
     @Override
-    protected MediaType doInBackground(Uri... params) {
+    protected ImageType doInBackground(Uri... params) {
         final Uri imageUri = params[0];
 
         ContentResolver contentResolver = contentResolverReference.get();
@@ -40,15 +53,15 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
         if(mimeType == null)
             return null;
 
-        if(mimeType.equals(MediaType.GIF.toString())) {
+        if(mimeType.equals(ImageType.GIF.toString())) {
             InputStream is = null;
 
             try {
                 is = contentResolver.openInputStream(imageUri);
 
-                imageData = IOUtils.toByteArray(is);
+                if(is != null) imageData = toByteArray(is);
 
-                return MediaType.GIF;
+                return ImageType.GIF;
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Couldn't find file", e);
             } catch (IOException e) {
@@ -65,7 +78,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, MediaType> {
             try {
                 image = decodeBitmapFromUri(imageUri, 400, 400);
 
-                return MediaType.ANY_IMAGE_TYPE;
+                return ImageType.ANY;
             } catch (IOException e) {
                 Log.e(TAG, "IO exception", e);
             }

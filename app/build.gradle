@@ -30,7 +30,7 @@ dependencies {
     implementation ('com.felipecsl:gifimageview:2.2.0-SNAPSHOT') {
         exclude group: "com.android.support"
     }
-    implementation 'commons-io:commons-io:2.6'
-    api 'com.google.guava:guava:28.0-android'
+    //implementation 'commons-io:commons-io:2.6' //only IOUtils.toByteArray()
+    //api 'com.google.guava:guava:28.0-android' //only MediaType
     testImplementation 'junit:junit:4.12'
 }
