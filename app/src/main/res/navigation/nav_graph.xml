@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_images">
+
+    <fragment
+        android:id="@+id/nav_images"
+        android:name="de.rtcustomz.walloflight.fragments.ProcessImageFragment"
+        android:label="@string/Images"
+        tools:layout="@layout/fragment_process_image" >
+        <argument
+            android:name="mode"
+            app:argType="de.rtcustomz.walloflight.model.ImageMode"
+            android:defaultValue="NORMAL" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_animating"
+        android:name="de.rtcustomz.walloflight.fragments.ProcessImageFragment"
+        android:label="@string/animate"
+        tools:layout="@layout/fragment_process_image" >
+        <argument
+            android:name="mode"
+            app:argType="de.rtcustomz.walloflight.model.ImageMode"
+            android:defaultValue="ANIMATING" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_gif"
+        android:name="de.rtcustomz.walloflight.fragments.ProcessImageFragment"
+        android:label="@string/gif"
+        tools:layout="@layout/fragment_process_image" >
+        <argument
+            android:name="mode"
+            app:argType="de.rtcustomz.walloflight.model.ImageMode"
+            android:defaultValue="GIF" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_twozero"
+        android:name="de.rtcustomz.walloflight.fragments.TwoZeroGameFragment"
+        android:label="@string/twozero" />
+    <fragment
+        android:id="@+id/nav_paint"
+        android:name="de.rtcustomz.walloflight.fragments.DrawingFragment"
+        android:label="@string/androidPaint"
+        tools:layout="@layout/fragment_drawing" />
+</navigation>

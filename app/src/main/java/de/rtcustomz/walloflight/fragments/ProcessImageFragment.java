@@ -46,23 +46,16 @@ public class ProcessImageFragment extends Fragment {
     private static final String ARG_MODE = "mode";
     private static final int REQUEST_GIF = 42;
 
+	private ProcessImageFragmentArgs args;
+
     public ProcessImageFragment() {
         // Required empty public constructor
-    }
-
-    public static Fragment newInstance(ImageMode mode) {
-        Fragment fragment = new ProcessImageFragment();
-
-        Bundle args = new Bundle();
-        args.putString(ARG_MODE, mode.name());
-        fragment.setArguments(args);
-
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        args = ProcessImageFragmentArgs.fromBundle(requireArguments());
     }
 
     @Override
@@ -74,7 +67,7 @@ public class ProcessImageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_process_image, container, false);
-        mode = ImageMode.valueOf(getArguments().getString(ARG_MODE));
+        mode = args.getMode();
 
         imageView = (GifImageView) rootView.findViewById(R.id.imageView);
         sendImageButton = (Button) rootView.findViewById(R.id.sendImageButton);

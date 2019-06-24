@@ -7,36 +7,27 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import com.google.android.material.navigation.NavigationView;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import de.rtcustomz.walloflight.activities.SettingsActivity;
-import de.rtcustomz.walloflight.fragments.DrawingFragment;
-import de.rtcustomz.walloflight.fragments.ProcessImageFragment;
-import de.rtcustomz.walloflight.fragments.TwoZeroGameFragment;
-import de.rtcustomz.walloflight.model.ImageMode;
 import de.rtcustomz.walloflight.util.Client;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     public static final int READ_EXTERNAL_STORAGE_REQUEST = 1;
 
     private SharedPreferences sharedPref;
-
-    Fragment drawingFragment;
-    Fragment normalImages;
-    Fragment animatedImages;
-    Fragment gifImages;
-    Fragment twoZeroGame;
+    AppBarConfiguration appBarConfiguration;
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -54,28 +45,21 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
-        drawingFragment = DrawingFragment.newInstance();
-        normalImages = ProcessImageFragment.newInstance(ImageMode.NORMAL);
-        animatedImages = ProcessImageFragment.newInstance(ImageMode.ANIMATING);
-        gifImages = ProcessImageFragment.newInstance(ImageMode.GIF);
-        twoZeroGame = TwoZeroGameFragment.newInstance();
+        appBarConfiguration = new AppBarConfiguration.Builder(navigationView.getMenu())
+                .setDrawerLayout(drawer)
+                .build();
+
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
         updateClientSettings();
-
-        loadFragment(normalImages);
-        setTitle(getResources().getString(R.string.Images));
-        navigationView.setCheckedItem(R.id.nav_images);
     }
 
     @Override
@@ -93,6 +77,14 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
+
     }
 
     @Override
@@ -120,36 +112,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_paint) {
-            loadFragment(drawingFragment);
-            setTitle(getResources().getString(R.string.androidPaint));
-        } else if(id == R.id.nav_images) {
-            loadFragment(normalImages);
-            setTitle(getResources().getString(R.string.Images));
-        } else if(id == R.id.nav_animating) {
-            loadFragment(animatedImages);
-            setTitle(getResources().getString(R.string.animate));
-        } else if(id == R.id.nav_gif) {
-            loadFragment(gifImages);
-            setTitle(getResources().getString(R.string.gif));
-        } else if(id == R.id.nav_twozero) {
-            loadFragment(twoZeroGame);
-            setTitle(getResources().getString(R.string.twozero));
-        }else {
-            return false;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -161,13 +123,6 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
         }
-    }
-
-    private void loadFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.content_frame, fragment);
-        ft.commit();
     }
 
     private void updateClientSettings() {
