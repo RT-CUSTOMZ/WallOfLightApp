@@ -1,9 +1,14 @@
 package de.rtcustomz.walloflight.fragments;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +30,7 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 	//custom drawing view
 	private DrawingView drawView;
 	//buttons
-	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn;
-
-	public static Fragment newInstance() {
-		return new DrawingFragment();
-	}
+	private ImageButton currPaint;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,15 +38,15 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_drawing, container,false);
 
 		//get drawing view
-		drawView = (DrawingView)rootView.findViewById(R.id.drawing);
+		drawView = rootView.findViewById(R.id.drawing);
 
 		//get the palette and first color button
-		LinearLayout paintColorsTop = (LinearLayout)rootView.findViewById(R.id.paint_colors_top);
-		LinearLayout paintColorsBottom = (LinearLayout)rootView.findViewById(R.id.paint_colors_bottom);
+		LinearLayout paintColorsTop = rootView.findViewById(R.id.paint_colors_top);
+		LinearLayout paintColorsBottom = rootView.findViewById(R.id.paint_colors_bottom);
 
 		OnClickListener switchColorListener = new OnClickListener() {
 			@Override
@@ -69,29 +70,29 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 		currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
 
 		//draw button
-		drawBtn = (ImageButton)rootView.findViewById(R.id.draw_btn);
+		ImageButton drawBtn = rootView.findViewById(R.id.draw_btn);
 		drawBtn.setOnClickListener(this);
 
 		//set initial size
 		drawView.setBrushSize(getResources().getInteger(R.integer.medium_size));
 
 		//erase button
-		eraseBtn = (ImageButton)rootView.findViewById(R.id.erase_btn);
+		ImageButton eraseBtn = rootView.findViewById(R.id.erase_btn);
 		eraseBtn.setOnClickListener(this);
 
 		//new button
-		newBtn = (ImageButton)rootView.findViewById(R.id.new_btn);
+		ImageButton newBtn = rootView.findViewById(R.id.new_btn);
 		newBtn.setOnClickListener(this);
 
 		//save button
-		saveBtn = (ImageButton)rootView.findViewById(R.id.save_btn);
+		ImageButton saveBtn = rootView.findViewById(R.id.save_btn);
 		saveBtn.setOnClickListener(this);
 
 		return rootView;
 	}
 
 	//user clicked paint
-	public void paintClicked(View view) {
+	private void paintClicked(View view) {
 		//use chosen color
 
 		//set erase false
@@ -111,8 +112,10 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 
 	@Override
 	public void onClick(View view) {
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+		final FragmentManager manager = getFragmentManager();
+		if(manager == null) return;
+		FragmentTransaction ft = manager.beginTransaction();
+		Fragment prev = manager.findFragmentByTag("dialog");
 
 		if (prev != null) {
 			ft.remove(prev);
@@ -164,15 +167,18 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 
 	@Override
 	public void onDialogNegativeClick(int initiator, DialogFragment dialog) {
-		dialog.getDialog().cancel();
+		Dialog dialog1 = dialog.getDialog();
+		if(dialog1 != null) dialog1.cancel();
 	}
 
 	private void saveBitmap() {
 		drawView.setDrawingCacheEnabled(true);
 
 		//attempt to save
-		String imgSaved = MediaStore.Images.Media.insertImage(
-				getActivity().getContentResolver(), drawView.getDrawingCache(),
+		FragmentActivity activity = getActivity();
+		String imgSaved = null;
+		if(activity != null) imgSaved = MediaStore.Images.Media.insertImage(
+				activity.getContentResolver(), drawView.getDrawingCache(),
 				UUID.randomUUID().toString() + ".png", getString(R.string.drawing_description));
 
 		//feedback

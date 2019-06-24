@@ -9,6 +9,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
@@ -35,7 +37,7 @@ import de.rtcustomz.walloflight.util.BitmapHelperClass;
 import de.rtcustomz.walloflight.util.BitmapWorkerTask;
 import de.rtcustomz.walloflight.util.SendBitmapTask;
 
-public class ProcessImageFragment extends Fragment {
+class ProcessImageFragment extends Fragment {
     private GifImageView imageView;
     private Button sendImageButton;
     private Button choosePictureButton;
@@ -43,7 +45,6 @@ public class ProcessImageFragment extends Fragment {
     private Bitmap scaledImage;
     private ImageMode mode;
 
-    private static final String ARG_MODE = "mode";
     private static final int REQUEST_GIF = 42;
 
 	private ProcessImageFragmentArgs args;
@@ -65,13 +66,13 @@ public class ProcessImageFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_process_image, container, false);
         mode = args.getMode();
 
-        imageView = (GifImageView) rootView.findViewById(R.id.imageView);
-        sendImageButton = (Button) rootView.findViewById(R.id.sendImageButton);
-        choosePictureButton = (Button) rootView.findViewById(R.id.choosePictureButton);
+        imageView = rootView.findViewById(R.id.imageView);
+        sendImageButton = rootView.findViewById(R.id.sendImageButton);
+        choosePictureButton = rootView.findViewById(R.id.choosePictureButton);
 
         switch(mode) {
             case NORMAL:
@@ -194,6 +195,8 @@ public class ProcessImageFragment extends Fragment {
         switch (requestCode) {
             case Crop.REQUEST_PICK:
                 final Uri imageUri = data.getData();
+                if(imageUri == null)
+                    return;
 
                 final String mimeType = BitmapHelperClass.getMimeType(imageUri, getContext().getContentResolver());
 
@@ -247,7 +250,7 @@ public class ProcessImageFragment extends Fragment {
         }
     }
 
-    public void selectPicture() {
+    private void selectPicture() {
         stopAllAnimations();
 
         if(hasPermissions()) {
@@ -292,13 +295,13 @@ public class ProcessImageFragment extends Fragment {
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    public void sendImage() throws WifiNotConnectedException {
+    private void sendImage() throws WifiNotConnectedException {
         checkWifi();
 
         new SendBitmapTask(getContext(), false).execute(scaledImage);
     }
 
-    public void toggleAnimation() throws WifiNotConnectedException {
+    private void toggleAnimation() throws WifiNotConnectedException {
         checkWifi();
 
         switch(sendBitmapTask.getStatus()) {
@@ -314,7 +317,7 @@ public class ProcessImageFragment extends Fragment {
         }
     }
 
-    public void toggleGifAnimation() throws WifiNotConnectedException {
+    private void toggleGifAnimation() throws WifiNotConnectedException {
         if(imageView.isAnimating()) {
             stopAllAnimations();
         } else {

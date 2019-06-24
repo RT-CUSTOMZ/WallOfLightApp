@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
 
 public class AlertDialogFragment extends DialogFragment {
     private static final String ARG_INITIATOR = "initiator";
@@ -48,9 +49,11 @@ public class AlertDialogFragment extends DialogFragment {
         Fragment context = getTargetFragment();
         if (context instanceof OnClickListener) {
             mListener = (OnClickListener) context;
-        } else {
+        } else if (context != null){
             throw new RuntimeException(context.toString()
                     + " must implement OnClickListener");
+        }else {
+            throw new RuntimeException("context must not be null");
         }
 
         if (getArguments() != null) {
@@ -65,7 +68,11 @@ public class AlertDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        FragmentActivity activity = getActivity();
+        if(activity == null){
+            throw new RuntimeException("activity must not be null");
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title);
         builder.setMessage(message);
         builder.setPositiveButton(positive, new DialogInterface.OnClickListener() {

@@ -176,7 +176,6 @@ public class TwoZeroView extends View {
         createOverlays();
     }
 
-    @SuppressWarnings("deprecation")
     private Drawable getDrawable(int resId) {
         return getResources().getDrawable(resId);
     }
@@ -307,7 +306,6 @@ public class TwoZeroView extends View {
 
     //Renders the set of 16 background squares.
     private void drawBackgroundGrid(Canvas canvas) {
-        Resources resources = getResources();
         Drawable backgroundCell = getDrawable(R.drawable.cell_rectangle);
         // Outputting the game grid
         for (int xx = 0; xx < game.numSquaresX; xx++) {

@@ -14,7 +14,7 @@ import de.rtcustomz.walloflight.R;
 
 public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
     private final WeakReference<Context> contextReference;
-    private boolean animateImage;
+    private final boolean animateImage;
 
     public SendBitmapTask(Context context, boolean animateImage) {
         contextReference = new WeakReference<>(context);
@@ -27,7 +27,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
 
         Context context = contextReference.get();
 
-        String error = "";
+        String error;
         if(e instanceof UnknownHostException) {
             error = context.getString(R.string.unknownHostError);
         } else if(e instanceof IOException) {
@@ -104,7 +104,7 @@ public class SendBitmapTask extends AsyncTask<Bitmap, Exception, Void> {
                 if(duration < 30) {
                     try {
                         Thread.sleep(30 - duration);
-                    } catch (InterruptedException e) {}
+                    } catch (InterruptedException ignored) {}
                 }
             }
         } else {

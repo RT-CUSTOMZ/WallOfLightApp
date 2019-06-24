@@ -9,7 +9,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 public final class Client {
-    private static byte[] gamma_correction_table = new byte[256];
+    private static final byte[] gamma_correction_table = new byte[256];
     private static String wol_ip;
 
     private Client() {
@@ -46,12 +46,12 @@ public final class Client {
         int offset_x = 0;
 
         for (int universe = 0; universe < 51; universe++) {
-            for (int channel = 0; channel < 502; channel += 3) { //0-501 (rot,gruen+1,blau+2)(501,502,503)
-                if (pos_y == 0) { //1.zeile
-                    if ((offset_x + pos_x) == 48) { //6.strang=neues universum
+            for (int channel = 0; channel < 502; channel += 3) { //0-501 (red,green+1,blue+2)(501,502,503)
+                if (pos_y == 0) { //1.line
+                    if ((offset_x + pos_x) == 48) { //6. row = new universe
                         universe++;
                         channel = 192;
-                    } else if ((offset_x + pos_x) % 8 == 0) { //neuer strang=kachel12 überspringen (8*8*3)
+                    } else if ((offset_x + pos_x) % 8 == 0) { //new row = skip tile 12 (8*8*3)
                         channel += 192;
                         if (channel > 501) {
                             universe++;

@@ -3,6 +3,8 @@ package de.rtcustomz.walloflight.fragments;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,7 @@ import android.view.ViewGroup;
 import de.rtcustomz.walloflight.twozerogame.Tile;
 import de.rtcustomz.walloflight.twozerogame.TwoZeroView;
 
-public class TwoZeroGameFragment extends Fragment {
+class TwoZeroGameFragment extends Fragment {
 
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
@@ -27,17 +29,13 @@ public class TwoZeroGameFragment extends Fragment {
     public TwoZeroGameFragment() {
     }
 
-    public static TwoZeroGameFragment newInstance() {
-        return new TwoZeroGameFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = new TwoZeroView(this.getContext());
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.getContext());
@@ -53,7 +51,7 @@ public class TwoZeroGameFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         savedInstanceState.putBoolean("hasState", true);
         save();
     }
@@ -92,7 +90,7 @@ public class TwoZeroGameFragment extends Fragment {
         editor.putBoolean(CAN_UNDO, view.game.canUndo);
         editor.putInt(GAME_STATE, view.game.gameState);
         editor.putInt(UNDO_GAME_STATE, view.game.lastGameState);
-        editor.commit();
+        editor.apply();
     }
 
     @Override

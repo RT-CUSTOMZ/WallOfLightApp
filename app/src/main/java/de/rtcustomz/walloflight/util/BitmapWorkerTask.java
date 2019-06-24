@@ -56,6 +56,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, ImageType> {
         if(mimeType.equals(ImageType.GIF.toString())) {
             InputStream is = null;
 
+            //noinspection TryFinallyCanBeTryWithResources
             try {
                 is = contentResolver.openInputStream(imageUri);
 
@@ -100,7 +101,7 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, ImageType> {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(is, null, options);
-        is.close();
+        if(is != null) is.close();
 
         // Calculate inSampleSize
         options.inSampleSize = BitmapHelperClass.calculateInSampleSize(options.outWidth, options.outHeight, reqWidth, reqHeight);
@@ -113,7 +114,9 @@ public class BitmapWorkerTask extends AsyncTask<Uri, Void, ImageType> {
 
         srcBitmap = BitmapFactory.decodeStream(is, null, options);
 
-        is.close();
+        if(is != null) is.close();
+
+        if(srcBitmap == null) return null;
 
         int orientation = BitmapHelperClass.getOrientation(imageUri);
 

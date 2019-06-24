@@ -1,8 +1,13 @@
 package de.rtcustomz.walloflight.dialogs;
 
+import android.app.Dialog;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,9 +51,11 @@ public class BrushChooser extends DialogFragment {
         Fragment context = getTargetFragment();
         if (context instanceof OnBrushClickListener) {
             mListener = (OnBrushClickListener) context;
-        } else {
+        } else if(context != null){
             throw new RuntimeException(context.toString()
                     + " must implement OnBrushClickListener");
+        } else {
+            throw new RuntimeException("context must not be null");
         }
 
         if (getArguments() != null) {
@@ -56,37 +63,45 @@ public class BrushChooser extends DialogFragment {
             title = getArguments().getString(BrushChooser.ARG_TITLE);
         }
 
-        smallBrush = getActivity().getResources().getInteger(R.integer.small_size);
-        mediumBrush = getActivity().getResources().getInteger(R.integer.medium_size);
-        largeBrush = getActivity().getResources().getInteger(R.integer.large_size);
+        FragmentActivity activity = getActivity();
+        if(activity != null) {
+            smallBrush = activity.getResources().getInteger(R.integer.small_size);
+            mediumBrush = activity.getResources().getInteger(R.integer.medium_size);
+            largeBrush = activity.getResources().getInteger(R.integer.large_size);
+        } else {
+            smallBrush = 10;
+            mediumBrush = 20;
+            largeBrush = 30;
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().setTitle(title);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final Dialog dialog = getDialog();
+        if(dialog != null) dialog.setTitle(title);
         View v = inflater.inflate(R.layout.brush_chooser, container, false);
-        ImageButton smallBtn = (ImageButton)v.findViewById(R.id.small_brush);
+        ImageButton smallBtn = v.findViewById(R.id.small_brush);
         smallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onBrushClick(smallBrush, erase);
-                getDialog().dismiss();
+                if(dialog != null) dialog.dismiss();
             }
         });
-        ImageButton mediumBtn = (ImageButton)v.findViewById(R.id.medium_brush);
+        ImageButton mediumBtn = v.findViewById(R.id.medium_brush);
         mediumBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onBrushClick(mediumBrush, erase);
-                getDialog().dismiss();
+                if(dialog != null) dialog.dismiss();
             }
         });
-        ImageButton largeBtn = (ImageButton)v.findViewById(R.id.large_brush);
+        ImageButton largeBtn = v.findViewById(R.id.large_brush);
         largeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onBrushClick(largeBrush, erase);
-                getDialog().dismiss();
+                if(dialog != null) dialog.dismiss();
             }
         });
         return v;
