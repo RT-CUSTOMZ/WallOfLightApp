@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import de.rtcustomz.walloflight.twozerogame.Tile;
 import de.rtcustomz.walloflight.twozerogame.TwoZeroView;
 
-class TwoZeroGameFragment extends Fragment {
+public class TwoZeroGameFragment extends Fragment {
 
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";

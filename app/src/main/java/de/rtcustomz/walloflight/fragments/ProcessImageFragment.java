@@ -37,7 +37,7 @@ import de.rtcustomz.walloflight.util.BitmapHelperClass;
 import de.rtcustomz.walloflight.util.BitmapWorkerTask;
 import de.rtcustomz.walloflight.util.SendBitmapTask;
 
-class ProcessImageFragment extends Fragment {
+public class ProcessImageFragment extends Fragment {
     private GifImageView imageView;
     private Button sendImageButton;
     private Button choosePictureButton;
