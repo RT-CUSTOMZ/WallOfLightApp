@@ -39,14 +39,14 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.exifinterface:exifinterface:1.1.0-beta01'
-    implementation 'androidx.navigation:navigation-fragment:2.1.0'
-    implementation 'androidx.navigation:navigation-ui:2.1.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'androidx.exifinterface:exifinterface:1.1.0'
+    implementation 'androidx.navigation:navigation-fragment:2.2.1'
+    implementation 'androidx.navigation:navigation-ui:2.2.1'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation ('com.soundcloud.android:android-crop:1.0.1@aar'){
         exclude group: "com.android.support"
     }
-    implementation ('com.felipecsl:gifimageview:2.2.0-SNAPSHOT') {
+    implementation ('com.felipecsl:gifimageview:2.3.0-SNAPSHOT') {
         exclude group: "com.android.support"
     }
     //implementation 'commons-io:commons-io:2.6' //only IOUtils.toByteArray()
