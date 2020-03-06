@@ -112,8 +112,7 @@ public class DrawingFragment extends Fragment implements OnClickListener, BrushC
 
 	@Override
 	public void onClick(View view) {
-		final FragmentManager manager = getFragmentManager();
-		if(manager == null) return;
+		final FragmentManager manager = getParentFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
 		Fragment prev = manager.findFragmentByTag("dialog");
 
